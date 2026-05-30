@@ -557,6 +557,47 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
 </div>
 
 <script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbz-preKuf6UcV17EDeMLRp1QgrnEdUKJoZLN_qwWTY7x5FHAgNk-d11zDZPgcF9lVnMQA/exec";
+
+async function syncToSheet(action, data) {
+  try {
+    const params = new URLSearchParams();
+    params.append('payload', JSON.stringify({action, ...data}));
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      body: params
+    });
+  } catch(e) { console.warn('Sheets sync:', e); }
+}
+
+async function loadFromSheet() {
+  try {
+    const res = await fetch(SHEET_URL + '?t=' + Date.now());
+    const data = await res.json();
+    if (data.clientes && data.clientes.length > 0) {
+      const clientes = data.clientes.map(r => ({
+        id: String(r.id||''), nCliente: r.ncliente||'',
+        apellido: r.apellido||'', nombre: r.nombre||'',
+        edad: r.edad||'', telefono: r.telefono||'',
+        cumple: r.cumple||'', primeraVisita: r.primeravisita||'',
+        nivel: r.nivel||'Nuevo', fotoLink: r.fotolink||'',
+        obs: r.obs||'', creado: r.creado||''
+      })).filter(c => c.id && c.apellido);
+      if (clientes.length > 0) { C = clientes; localStorage.setItem('pelo_clientes', JSON.stringify(C)); }
+    }
+    if (data.visitas && data.visitas.length > 0) {
+      const visitas = data.visitas.map(r => ({
+        id: String(r.id||''), clienteId: String(r.clienteid||''),
+        fecha: r.fecha||'', servicios: (r.servicios||'').split(', ').filter(Boolean),
+        detalles: (() => { try { return JSON.parse(r.detalles||'{}'); } catch(e) { return {}; } })(),
+        costo: parseFloat(r.total)||0, tarjeta: r.tarjeta==='Si', notas: r.notas||''
+      })).filter(v => v.id && v.clienteId);
+      if (visitas.length > 0) { S = visitas; localStorage.setItem('pelo_servicios', JSON.stringify(S)); }
+    }
+    renderList('');
+  } catch(e) { console.warn('Usando localStorage:', e); renderList(''); }
+}
+
 let C=JSON.parse(localStorage.getItem('pelo_clientes')||'[]');
 let S=JSON.parse(localStorage.getItem('pelo_servicios')||'[]');
 let editId=null;
@@ -728,6 +769,7 @@ function saveCliente(){
   if(!ap||!no){setMsg(msg,'err','⚠ Completá apellido y nombre.');return}
   const c={id:Date.now().toString(),nCliente:document.getElementById('f-num').value,apellido:ap,nombre:no,edad:document.getElementById('f-edad').value,telefono:document.getElementById('f-tel').value,cumple:document.getElementById('f-cumple-r').value,primeraVisita:document.getElementById('f-pv-r').value,nivel:document.getElementById('f-nivel').value,fotoLink:document.getElementById('f-foto').value,obs:document.getElementById('f-obs').value,creado:new Date().toISOString()};
   C.push(c);sv();
+  syncToSheet('saveCliente', c);
   showToast('✓ Ficha de '+ap+', '+no+' guardada 🌸');
   setTimeout(()=>{clearNuevo();goTab('buscar',document.querySelectorAll('.tab')[0])},1500);
 }
@@ -782,6 +824,7 @@ function saveServicio(){
   const pct=parseFloat(localStorage.getItem('pelo_tarjeta_pct')||'0');
   const entry={id:Date.now().toString(),clienteId:cId,fecha,servicios:svcs,detalles:dets,precios_svc:precios,variantes:vars,costo,tarjeta,tarjeta_pct:tarjeta?pct:0,fotoLink:document.getElementById('s-foto').value,notas:document.getElementById('s-notas').value};
   S.push(entry);
+  syncToSheet('saveServicio', entry);
   const c=C.find(x=>x.id===cId);
   const tot=S.filter(x=>x.clienteId===cId).length;
   if(tot>=10)c.nivel='VIP';else if(tot>=3&&c.nivel==='Nuevo')c.nivel='Regular';
@@ -1289,7 +1332,7 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-initNum();renderList('');loadPrecios();
+initNum();loadPrecios();loadFromSheet();
 </script>
 
 <div id="toast" class="toast"><i class="ti ti-circle-check"></i><span id="toastMsg"></span></div>
