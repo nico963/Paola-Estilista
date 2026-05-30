@@ -59,7 +59,7 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
 .dp-show{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:var(--rad);background:#fff;color:var(--txt);font-size:14px;cursor:pointer}
 .dp-show:focus{outline:none;border-color:var(--k1)}
 .dp-show.empty{color:var(--txt3)}
-.dp-real{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:16px;-webkit-appearance:none}
+.dp-real{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 /* buttons */
 .btn{padding:9px 16px;border:1.5px solid var(--brd2);border-radius:var(--rad);background:#fff;color:var(--txt);cursor:pointer;font-size:14px;font-family:'DM Sans',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px;font-weight:500}
 .btn:hover{background:var(--k5);transform:translateY(-1px)}
@@ -170,6 +170,11 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
 .xbtn{background:rgba(255,255,255,.2);border:none;cursor:pointer;color:#fff;padding:6px;border-radius:8px;display:flex;align-items:center;font-size:20px;transition:.2s;line-height:1}
 .xbtn:hover{background:rgba(255,255,255,.35)}
 @media(max-width:480px){.grid2{grid-template-columns:1fr}.svc-grid{grid-template-columns:1fr 1fr}.tab span{display:none}}
+
+/* DATE INPUT NATIVO DIRECTO */
+.date-input{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:var(--rad);background:#fff;color:var(--txt);font-size:14px;font-family:'DM Sans',sans-serif;transition:border .2s;-webkit-appearance:none;appearance:none;cursor:pointer}
+.date-input:focus{outline:none;border-color:var(--k1)}
+.date-input::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer;filter:invert(30%) sepia(60%) saturate(500%) hue-rotate(260deg)}
 
 /* ===== CALENDAR ===== */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
@@ -324,10 +329,10 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
       <div class="fg"><label>Edad</label><input id="f-edad" type="number" placeholder="32" min="1" max="120" /></div>
       <div class="fg"><label>Teléfono</label><input id="f-tel" type="tel" placeholder="011-4567-8901" /></div>
       <div class="fg"><label>Cumpleaños 🎂</label>
-        <div class="dp-wrap"><input class="dp-show empty" id="f-cumple-s" placeholder="dd/mm/aaaa" readonly onclick="pickDate('f-cumple-r')" /><input type="date" id="f-cumple-r" class="dp-real" onchange="syncDP('f-cumple-r','f-cumple-s')" /></div>
+        <input type="date" id="f-cumple-r" class="date-input" onchange="syncDP('f-cumple-r','f-cumple-s')" />
       </div>
       <div class="fg"><label>Primera visita</label>
-        <div class="dp-wrap"><input class="dp-show empty" id="f-pv-s" placeholder="dd/mm/aaaa" readonly onclick="pickDate('f-pv-r')" /><input type="date" id="f-pv-r" class="dp-real" onchange="syncDP('f-pv-r','f-pv-s')" /></div>
+        <input type="date" id="f-pv-r" class="date-input" onchange="syncDP('f-pv-r','f-pv-s')" />
       </div>
       <div class="fg full"><label>Link foto Drive (opcional)</label><input id="f-foto" type="url" placeholder="https://drive.google.com/..." /></div>
       <div class="fg full"><label>Observaciones generales 📝</label><textarea id="f-obs" placeholder="Ej: alérgica al amoniaco, le gusta el flequillo recto..."></textarea></div>
@@ -347,7 +352,7 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
     <div class="fg"><label>Clienta *</label><select id="s-cli"><option value="">— Seleccionar clienta —</option></select></div>
     <div class="grid2" style="margin-bottom:1rem">
       <div class="fg"><label>Fecha *</label>
-        <div class="dp-wrap"><input class="dp-show empty" id="s-fecha-s" placeholder="dd/mm/aaaa" readonly onclick="pickDate('s-fecha-r')" /><input type="date" id="s-fecha-r" class="dp-real" onchange="syncDP('s-fecha-r','s-fecha-s')" /></div>
+        <input type="date" id="s-fecha-r" class="date-input" onchange="syncDP('s-fecha-r','s-fecha-s')" />
       </div>
     </div>
 
@@ -550,7 +555,7 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
       </div>
       <div class="fg" id="t-cli-ext-wrap" style="display:none"><label>Nombre clienta externa</label><input type="text" id="t-cli-ext" placeholder="Nombre y apellido" /></div>
       <div class="fg"><label>Fecha *</label>
-        <div class="dp-wrap"><input class="dp-show empty" id="t-fecha-s" placeholder="dd/mm/aaaa" readonly onclick="pickDate('t-fecha-r')" /><input type="date" id="t-fecha-r" class="dp-real" onchange="syncDP('t-fecha-r','t-fecha-s');filterHours()" /></div>
+        <input type="date" id="t-fecha-r" class="date-input" onchange="syncDP('t-fecha-r','t-fecha-s');filterHours()" />
       </div>
       <div class="fg"><label>Hora * <span id="t-hora-hint" style="font-size:11px;color:var(--p3);font-weight:400"></span></label>
         <div class="hour-grid"><input type="radio" name="t-hora" id="th0700" value="07:00" class="hour-rb"><label for="th0700" class="hour-pill">07:00</label><input type="radio" name="t-hora" id="th0730" value="07:30" class="hour-rb"><label for="th0730" class="hour-pill">07:30</label><input type="radio" name="t-hora" id="th0800" value="08:00" class="hour-rb"><label for="th0800" class="hour-pill">08:00</label><input type="radio" name="t-hora" id="th0830" value="08:30" class="hour-rb"><label for="th0830" class="hour-pill">08:30</label><input type="radio" name="t-hora" id="th0900" value="09:00" class="hour-rb"><label for="th0900" class="hour-pill">09:00</label><input type="radio" name="t-hora" id="th0930" value="09:30" class="hour-rb"><label for="th0930" class="hour-pill">09:30</label><input type="radio" name="t-hora" id="th1000" value="10:00" class="hour-rb"><label for="th1000" class="hour-pill">10:00</label><input type="radio" name="t-hora" id="th1030" value="10:30" class="hour-rb"><label for="th1030" class="hour-pill">10:30</label><input type="radio" name="t-hora" id="th1100" value="11:00" class="hour-rb"><label for="th1100" class="hour-pill">11:00</label><input type="radio" name="t-hora" id="th1130" value="11:30" class="hour-rb"><label for="th1130" class="hour-pill">11:30</label><input type="radio" name="t-hora" id="th1200" value="12:00" class="hour-rb"><label for="th1200" class="hour-pill">12:00</label><input type="radio" name="t-hora" id="th1230" value="12:30" class="hour-rb"><label for="th1230" class="hour-pill">12:30</label><input type="radio" name="t-hora" id="th1300" value="13:00" class="hour-rb"><label for="th1300" class="hour-pill">13:00</label><input type="radio" name="t-hora" id="th1330" value="13:30" class="hour-rb"><label for="th1330" class="hour-pill">13:30</label><input type="radio" name="t-hora" id="th1400" value="14:00" class="hour-rb"><label for="th1400" class="hour-pill">14:00</label><input type="radio" name="t-hora" id="th1430" value="14:30" class="hour-rb"><label for="th1430" class="hour-pill">14:30</label><input type="radio" name="t-hora" id="th1500" value="15:00" class="hour-rb"><label for="th1500" class="hour-pill">15:00</label><input type="radio" name="t-hora" id="th1530" value="15:30" class="hour-rb"><label for="th1530" class="hour-pill">15:30</label><input type="radio" name="t-hora" id="th1600" value="16:00" class="hour-rb"><label for="th1600" class="hour-pill">16:00</label><input type="radio" name="t-hora" id="th1630" value="16:30" class="hour-rb"><label for="th1630" class="hour-pill">16:30</label><input type="radio" name="t-hora" id="th1700" value="17:00" class="hour-rb"><label for="th1700" class="hour-pill">17:00</label><input type="radio" name="t-hora" id="th1730" value="17:30" class="hour-rb"><label for="th1730" class="hour-pill">17:30</label><input type="radio" name="t-hora" id="th1800" value="18:00" class="hour-rb"><label for="th1800" class="hour-pill">18:00</label><input type="radio" name="t-hora" id="th1830" value="18:30" class="hour-rb"><label for="th1830" class="hour-pill">18:30</label><input type="radio" name="t-hora" id="th1900" value="19:00" class="hour-rb"><label for="th1900" class="hour-pill">19:00</label><input type="radio" name="t-hora" id="th1930" value="19:30" class="hour-rb"><label for="th1930" class="hour-pill">19:30</label><input type="radio" name="t-hora" id="th2000" value="20:00" class="hour-rb"><label for="th2000" class="hour-pill">20:00</label><input type="radio" name="t-hora" id="th2030" value="20:30" class="hour-rb"><label for="th2030" class="hour-pill">20:30</label></div>
@@ -593,8 +598,8 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
         <div class="fg"><label>Nombre *</label><input id="e-nom" type="text" /></div>
         <div class="fg"><label>Edad</label><input id="e-edad" type="number" min="1" max="120" /></div>
         <div class="fg"><label>Teléfono</label><input id="e-tel" type="tel" /></div>
-        <div class="fg"><label>Cumpleaños 🎂</label><div class="dp-wrap"><input class="dp-show empty" id="e-cumple-s" placeholder="dd/mm/aaaa" readonly onclick="pickDate('e-cumple-r')" /><input type="date" id="e-cumple-r" class="dp-real" onchange="syncDP('e-cumple-r','e-cumple-s')" /></div></div>
-        <div class="fg"><label>Primera visita</label><div class="dp-wrap"><input class="dp-show empty" id="e-pv-s" placeholder="dd/mm/aaaa" readonly onclick="pickDate('e-pv-r')" /><input type="date" id="e-pv-r" class="dp-real" onchange="syncDP('e-pv-r','e-pv-s')" /></div></div>
+        <div class="fg"><label>Cumpleaños 🎂</label><input type="date" id="e-cumple-r" class="date-input" onchange="syncDP('e-cumple-r','e-cumple-s')" /></div>
+        <div class="fg"><label>Primera visita</label><input type="date" id="e-pv-r" class="date-input" onchange="syncDP('e-pv-r','e-pv-s')" /></div>
         <div class="fg"><label>Nivel</label><select id="e-nivel"><option value="Nuevo">🌸 Nueva</option><option value="Regular">⭐ Regular</option><option value="VIP">💎 VIP</option></select></div>
         <div class="fg full"><label>Link foto Drive</label><input id="e-foto" type="url" /></div>
         <div class="fg full"><label>Observaciones</label><textarea id="e-obs"></textarea></div>
@@ -660,14 +665,7 @@ const SICONS={corte:'ti-scissors',color:'ti-palette',mechas:'ti-sparkles',base:'
 function sv(){localStorage.setItem('pelo_clientes',JSON.stringify(C));localStorage.setItem('pelo_servicios',JSON.stringify(S))}
 
 // date helpers
-function pickDate(id){
-  const el=document.getElementById(id);
-  // Intentar showPicker (Chrome/Firefox desktop)
-  try{ if(typeof el.showPicker==='function'){el.showPicker();return;} }catch(e){}
-  // Fallback: click directo (iOS Safari, Android)
-  try{ el.focus(); }catch(e){}
-  try{ el.click(); }catch(e){}
-}
+function pickDate(id){const el=document.getElementById(id);if(el.showPicker)el.showPicker();else el.click()}
 function syncDP(rid,sid){
   const v=document.getElementById(rid).value;
   const s=document.getElementById(sid);
@@ -1359,46 +1357,37 @@ function delAllDay(){
 
 function filterHours(){
   const iso=document.getElementById('t-fecha-r').value;
-  if(!iso) return;
+  if(!iso)return;
   const dow=new Date(iso+'T12:00:00').getDay();
   let start='',end='',hint='',isWork=false;
-  if([2,4,6].includes(dow)){start='09:30';end='16:30';hint='🕙 Horario del día: 9:30 a 16:30hs';isWork=true;}
-  else if([3,5].includes(dow)){start='13:00';end='19:00';hint='🕐 Horario del día: 13:00 a 19:00hs';isWork=true;}
+  if([2,4,6].includes(dow)){start='09:30';end='16:30';hint='🕙 9:30 a 16:30hs';isWork=true;}
+  else if([3,5].includes(dow)){start='13:00';end='19:00';hint='🕐 13:00 a 19:00hs';isWork=true;}
   else{hint='⚠️ Sin atención este día';}
   const hintEl=document.getElementById('t-hora-hint');
   if(hintEl){
     hintEl.textContent=hint;
-    hintEl.style.display='inline';
-    hintEl.style.color=isWork?'var(--p2)':'#C0392B';
+    hintEl.style.display='inline-block';
+    hintEl.style.color=isWork?'var(--p1)':'#C0392B';
     hintEl.style.fontWeight='600';
     hintEl.style.background=isWork?'var(--k4)':'#FFE4E4';
-    hintEl.style.padding='3px 8px';
+    hintEl.style.padding='2px 8px';
     hintEl.style.borderRadius='20px';
     hintEl.style.fontSize='11px';
+    hintEl.style.marginLeft='6px';
   }
-  // Ocultar la grilla completa si no es día laboral
-  const grid=document.getElementById('t-hora-hint') && document.querySelector('.hour-grid');
   document.querySelectorAll('[name="t-hora"]').forEach(r=>{
-    const label=document.querySelector('label[for="'+r.id+'"]');
-    if(!label)return;
-    if(!isWork){
-      // Día sin trabajo: ocultar todas las horas
-      label.style.display='none';
+    const lbl=document.querySelector('label[for="'+r.id+'"]');
+    if(!lbl)return;
+    if(!isWork||r.value<start||r.value>end){
+      lbl.style.display='none';
       r.disabled=true;
       if(r.checked)r.checked=false;
-    } else {
-      const inRange=r.value>=start&&r.value<=end;
-      if(inRange){
-        label.style.display='block';
-        label.style.opacity='1';
-        label.style.background='';
-        label.style.cursor='pointer';
-        r.disabled=false;
-      } else {
-        label.style.display='none';
-        r.disabled=true;
-        if(r.checked)r.checked=false;
-      }
+    }else{
+      lbl.style.display='block';
+      lbl.style.opacity='1';
+      lbl.style.background='';
+      lbl.style.cursor='pointer';
+      r.disabled=false;
     }
   });
   validateOverlapForm();
