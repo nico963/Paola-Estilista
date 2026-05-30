@@ -2,8 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="description" content="Sistema de gestión de clientas para Paola Estilista">
+<meta name="author" content="Paola Estilista">
+<meta name="theme-color" content="#6B1F6B">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paola Estilista</title>
+<title>✨ Paola Estilista — Gestión de Clientas</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
@@ -230,6 +233,55 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
 .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:linear-gradient(135deg,var(--p1),var(--k1));color:#fff;padding:.875rem 1.5rem;border-radius:var(--radl);font-size:14px;font-weight:500;box-shadow:var(--sh-lg);z-index:9999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;display:flex;align-items:center;gap:8px}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast i{font-size:18px}
+
+/* ===== HELP BUTTON & TUTORIAL ===== */
+.help-fab{position:fixed;bottom:5.5rem;right:1rem;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--p2),var(--k1));border:none;cursor:pointer;box-shadow:0 4px 16px rgba(176,61,175,.35);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform .2s}
+.help-fab:hover{transform:scale(1.1)}
+.help-fab i{font-size:22px;color:#fff}
+/* tutorial modal */
+.tut-mo{display:none;position:fixed;inset:0;background:rgba(45,21,32,.65);z-index:300;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;backdrop-filter:blur(4px)}
+.tut-mo.open{display:flex}
+.tut-box{background:#fff;border-radius:var(--radxl);width:min(560px,100%);margin:auto;box-shadow:var(--sh-lg);overflow:hidden}
+.tut-hdr{background:linear-gradient(135deg,var(--p1),var(--k1));padding:1.25rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
+.tut-hdr-title{font-family:'Playfair Display',serif;font-size:18px;color:#fff;font-weight:600}
+.tut-hdr-sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:2px}
+.tut-body{padding:0}
+/* step tabs */
+.tut-tabs{display:flex;border-bottom:2px solid var(--brd);background:var(--k5)}
+.tut-tab{flex:1;padding:10px 4px;border:none;background:none;cursor:pointer;font-size:11px;color:var(--txt2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'DM Sans',sans-serif}
+.tut-tab i{font-size:18px}
+.tut-tab.on{color:var(--p3);border-bottom-color:var(--p3);font-weight:600}
+.tut-step{display:none;padding:1.25rem}
+.tut-step.on{display:block}
+/* visual cards */
+.tut-visual{background:linear-gradient(135deg,var(--k5),var(--k4));border:1.5px solid var(--brd);border-radius:var(--radl);padding:1rem;margin-bottom:1rem;display:flex;align-items:center;gap:12px}
+.tut-icon{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--p2),var(--k1));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tut-icon i{font-size:24px;color:#fff}
+.tut-visual-txt{flex:1}
+.tut-visual-txt h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--p1);margin-bottom:4px}
+.tut-visual-txt p{font-size:13px;color:var(--txt2);line-height:1.5}
+/* steps list */
+.tut-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem}
+.tut-step-item{display:flex;gap:10px;align-items:flex-start}
+.tut-step-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--p2),var(--k1));color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.tut-step-txt{flex:1;font-size:13px;color:var(--txt);line-height:1.5}
+.tut-step-txt strong{color:var(--p1)}
+/* tip box */
+.tut-tip{background:var(--k4);border:1px solid var(--brd2);border-radius:var(--rad);padding:.75rem 1rem;font-size:12px;color:var(--p2);line-height:1.5;display:flex;gap:8px;margin-bottom:1rem}
+.tut-tip i{flex-shrink:0;font-size:16px;margin-top:1px}
+/* nav buttons */
+.tut-nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-top:1px solid var(--brd);background:var(--k5)}
+.tut-dots{display:flex;gap:6px}
+.tut-dot{width:8px;height:8px;border-radius:50%;background:var(--brd2);transition:background .2s;cursor:pointer}
+.tut-dot.on{background:var(--p3)}
+/* screen mockup */
+.tut-mock{background:#fff;border:1.5px solid var(--brd);border-radius:var(--rad);padding:.75rem;margin-bottom:.75rem;font-size:12px}
+.tut-mock-bar{display:flex;gap:5px;margin-bottom:.5rem}
+.tut-mock-btn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--brd)}
+.tut-mock-btn.active{background:var(--k4);border-color:var(--p3);color:var(--p1)}
+.tut-field{background:var(--k5);border:1px solid var(--brd);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--txt2);margin-bottom:5px}
+.tut-field span{color:var(--p3);font-weight:600}
+
 </style>
 </head>
 <body>
@@ -561,11 +613,10 @@ const SHEET_URL = "https://script.google.com/macros/s/AKfycbz-preKuf6UcV17EDeMLR
 
 async function syncToSheet(action, data) {
   try {
-    const params = new URLSearchParams();
-    params.append('payload', JSON.stringify({action, ...data}));
     await fetch(SHEET_URL, {
-      method: 'POST',
-      body: params
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({action, ...data})
     });
   } catch(e) { console.warn('Sheets sync:', e); }
 }
@@ -1333,7 +1384,267 @@ function showToast(msg){
 }
 
 initNum();loadPrecios();loadFromSheet();
+
+// ===== TUTORIAL =====
+let tutIdx = 0;
+const TUT_TOTAL = 5;
+
+function openTutorial() {
+  document.getElementById('tutModal').classList.add('open');
+  goTutIdx(0);
+}
+function closeTutorial() {
+  document.getElementById('tutModal').classList.remove('open');
+}
+function goTut(idx, btn) {
+  tutIdx = idx;
+  document.querySelectorAll('.tut-step').forEach(e => e.classList.remove('on'));
+  document.querySelectorAll('.tut-tab').forEach(e => e.classList.remove('on'));
+  document.getElementById('tut-' + idx).classList.add('on');
+  if (btn) btn.classList.add('on');
+  else {
+    document.querySelectorAll('.tut-tab')[idx].classList.add('on');
+  }
+  document.querySelectorAll('.tut-dot').forEach((d, i) => d.classList.toggle('on', i === idx));
+  document.getElementById('tutPrev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+  document.getElementById('tutNext').textContent = idx === TUT_TOTAL - 1 ? '¡Listo! ✓' : 'Siguiente ›';
+  document.getElementById('tutNext').innerHTML = idx === TUT_TOTAL - 1
+    ? '<i class="ti ti-check"></i> ¡Listo!'
+    : 'Siguiente <i class="ti ti-arrow-right"></i>';
+}
+function goTutIdx(idx) { goTut(idx, null); }
+function tutNav(dir) {
+  const next = tutIdx + dir;
+  if (next < 0) return;
+  if (next >= TUT_TOTAL) { closeTutorial(); return; }
+  goTutIdx(next);
+}
+
+
+// ===== BLINDAJE DEL SISTEMA =====
+// 1. Deshabilitar clic derecho
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 2. Deshabilitar F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S del navegador
+document.addEventListener('keydown', function(e) {
+  // F12
+  if (e.key === 'F12') { e.preventDefault(); return false; }
+  // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C (DevTools)
+  if (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) { e.preventDefault(); return false; }
+  // Ctrl+U (ver fuente)
+  if (e.ctrlKey && ['U','u'].includes(e.key)) { e.preventDefault(); return false; }
+  // Ctrl+S (guardar página)
+  if (e.ctrlKey && ['S','s'].includes(e.key)) { e.preventDefault(); return false; }
+});
+
+// 3. Detectar DevTools abierto y mostrar advertencia
+(function devToolsDetect() {
+  const threshold = 160;
+  setInterval(() => {
+    if (window.outerWidth - window.innerWidth > threshold ||
+        window.outerHeight - window.innerHeight > threshold) {
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;flex-direction:column;gap:16px;background:#FFF3FB"><div style="font-size:48px">🔒</div><div style="font-size:20px;font-weight:700;color:#6B1F6B">Acceso restringido</div><div style="font-size:14px;color:#7A3A7A">Por favor cerrá las herramientas de desarrollo.</div><button onclick="location.reload()" style="padding:10px 24px;background:linear-gradient(135deg,#8B2B8B,#E85DB0);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;margin-top:8px">Recargar página</button></div>';
+    }
+  }, 1000);
+})();
+
+// 4. Prevenir selección de texto en zonas sensibles
+document.querySelectorAll('.card-title, .hdr, .tabs').forEach(el => {
+  el.style.userSelect = 'none';
+  el.style.webkitUserSelect = 'none';
+});
+// ===== FIN BLINDAJE =====
+
 </script>
+
+
+<!-- HELP FAB BUTTON -->
+<button class="help-fab" onclick="openTutorial()" title="¿Cómo usar el sistema?">
+  <i class="ti ti-sparkles"></i>
+</button>
+
+<!-- TUTORIAL MODAL -->
+<div id="tutModal" class="tut-mo" onclick="if(event.target===this)closeTutorial()">
+  <div class="tut-box">
+    <div class="tut-hdr">
+      <div>
+        <div class="tut-hdr-title">📖 ¿Cómo usar el sistema?</div>
+        <div class="tut-hdr-sub">Guía paso a paso para Paola Estilista</div>
+      </div>
+      <button class="xbtn" onclick="closeTutorial()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="tut-tabs">
+      <button class="tut-tab on" onclick="goTut(0,this)"><i class="ti ti-user-plus"></i>Nueva ficha</button>
+      <button class="tut-tab" onclick="goTut(1,this)"><i class="ti ti-sparkles"></i>Registrar visita</button>
+      <button class="tut-tab" onclick="goTut(2,this)"><i class="ti ti-search"></i>Buscar</button>
+      <button class="tut-tab" onclick="goTut(3,this)"><i class="ti ti-coin"></i>Precios</button>
+      <button class="tut-tab" onclick="goTut(4,this)"><i class="ti ti-device-floppy"></i>Guardar</button>
+    </div>
+
+    <!-- PASO 0: NUEVA FICHA -->
+    <div class="tut-step on" id="tut-0">
+      <div class="tut-visual">
+        <div class="tut-icon"><i class="ti ti-user-circle"></i></div>
+        <div class="tut-visual-txt">
+          <h3>Crear ficha de clienta</h3>
+          <p>La primera vez que viene una clienta, creás su ficha con sus datos personales.</p>
+        </div>
+      </div>
+      <div class="tut-mock">
+        <div class="tut-mock-bar">
+          <span class="tut-mock-btn">Buscar</span>
+          <span class="tut-mock-btn active">✚ Nueva ficha</span>
+          <span class="tut-mock-btn">Servicio</span>
+        </div>
+        <div class="tut-field">Apellido * <span>González</span></div>
+        <div class="tut-field">Nombre * <span>Laura</span></div>
+        <div class="tut-field">Teléfono <span>011-4567-8901</span></div>
+        <div style="margin-top:8px;background:linear-gradient(135deg,var(--p2),var(--k1));color:#fff;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px"><i class="ti ti-device-floppy" style="font-size:13px"></i> Guardar ficha</div>
+      </div>
+      <div class="tut-steps">
+        <div class="tut-step-item"><div class="tut-step-num">1</div><div class="tut-step-txt">Tocá la pestaña <strong>Nueva ficha</strong> (ícono de persona con +)</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">2</div><div class="tut-step-txt">Completá <strong>Apellido</strong> y <strong>Nombre</strong> (obligatorios). El resto es opcional.</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">3</div><div class="tut-step-txt">Elegí el <strong>nivel</strong>: 🌸 Nueva, ⭐ Regular o 💎 VIP</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">4</div><div class="tut-step-txt">Tocá <strong>Guardar ficha</strong> — se guarda automáticamente en la nube ☁️</div></div>
+      </div>
+      <div class="tut-tip"><i class="ti ti-bulb"></i> El número de clienta se asigna automático. No hace falta escribirlo.</div>
+    </div>
+
+    <!-- PASO 1: REGISTRAR VISITA -->
+    <div class="tut-step" id="tut-1">
+      <div class="tut-visual">
+        <div class="tut-icon"><i class="ti ti-sparkles"></i></div>
+        <div class="tut-visual-txt">
+          <h3>Registrar una visita</h3>
+          <p>Cada vez que una clienta viene al salón, registrás los servicios que le hiciste y el precio.</p>
+        </div>
+      </div>
+      <div class="tut-mock">
+        <div class="tut-mock-bar">
+          <span class="tut-mock-btn active">✨ Servicio</span>
+        </div>
+        <div class="tut-field">Clienta * <span>González, Laura</span></div>
+        <div class="tut-field">Fecha * <span>30/05/2026</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin:6px 0">
+          <span style="background:var(--k4);border:1.5px solid var(--p3);color:var(--p1);padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600">✂️ Corte</span>
+          <span style="background:#fff;border:1.5px solid var(--brd);color:var(--txt2);padding:4px 10px;border-radius:8px;font-size:11px">🎨 Color</span>
+          <span style="background:var(--k4);border:1.5px solid var(--p3);color:var(--p1);padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600">✨ Mechas</span>
+        </div>
+        <div style="background:linear-gradient(135deg,var(--p1),var(--k1));color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;margin-top:4px">Total: $25.000</div>
+      </div>
+      <div class="tut-steps">
+        <div class="tut-step-item"><div class="tut-step-num">1</div><div class="tut-step-txt">Tocá la pestaña <strong>Servicio</strong> (ícono de estrella ✨)</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">2</div><div class="tut-step-txt">Seleccioná la <strong>clienta</strong> del listado y confirmá la <strong>fecha</strong></div></div>
+        <div class="tut-step-item"><div class="tut-step-num">3</div><div class="tut-step-txt">Marcá los <strong>servicios realizados</strong> — se van sumando al total automáticamente</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">4</div><div class="tut-step-txt">Si pagó con tarjeta, tildá <strong>"Pagó con tarjeta"</strong> para aplicar el recargo</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">5</div><div class="tut-step-txt">Tocá <strong>Registrar visita</strong> para guardar</div></div>
+      </div>
+      <div class="tut-tip"><i class="ti ti-bulb"></i> Podés ajustar el precio final manualmente en el campo "Ajustar" si lo necesitás.</div>
+    </div>
+
+    <!-- PASO 2: BUSCAR -->
+    <div class="tut-step" id="tut-2">
+      <div class="tut-visual">
+        <div class="tut-icon"><i class="ti ti-search"></i></div>
+        <div class="tut-visual-txt">
+          <h3>Buscar y ver fichas</h3>
+          <p>Encontrá cualquier clienta en segundos y revisá todo su historial de visitas.</p>
+        </div>
+      </div>
+      <div class="tut-mock">
+        <div style="background:var(--k5);border:1.5px solid var(--brd);border-radius:10px;padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2)">
+          <i class="ti ti-search" style="color:var(--txt3)"></i> Buscar por nombre, apellido o N°...
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--brd);border-radius:10px;padding:10px;display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--k4),var(--k5));border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--p3);font-size:14px">GL</div>
+          <div>
+            <div style="font-weight:500;font-size:13px">González, Laura</div>
+            <div style="font-size:11px;color:var(--txt2)">011-4567-8901 · Corte, Mechas (28/04/2026)</div>
+          </div>
+          <span style="background:var(--k4);color:var(--p1);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;margin-left:auto">⭐ Regular</span>
+        </div>
+      </div>
+      <div class="tut-steps">
+        <div class="tut-step-item"><div class="tut-step-num">1</div><div class="tut-step-txt">La pestaña <strong>Buscar</strong> muestra todas las clientas ordenadas por apellido</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">2</div><div class="tut-step-txt">Escribí el nombre, apellido o número de clienta en el buscador</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">3</div><div class="tut-step-txt">Tocá una clienta para ver su <strong>ficha completa</strong> e historial de visitas</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">4</div><div class="tut-step-txt">Desde la ficha podés <strong>editar los datos</strong> o ver el desglose de cada visita</div></div>
+      </div>
+      <div class="tut-tip"><i class="ti ti-bulb"></i> El nivel sube automático: con 3 visitas pasa a ⭐ Regular, con 10 a 💎 VIP.</div>
+    </div>
+
+    <!-- PASO 3: PRECIOS -->
+    <div class="tut-step" id="tut-3">
+      <div class="tut-visual">
+        <div class="tut-icon"><i class="ti ti-coin"></i></div>
+        <div class="tut-visual-txt">
+          <h3>Configurar precios</h3>
+          <p>Cargá los precios base una sola vez. Se completan solos al registrar cada visita.</p>
+        </div>
+      </div>
+      <div class="tut-mock">
+        <div style="font-size:11px;font-weight:600;color:var(--p2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">✂️ Corte</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--brd);font-size:12px">
+          <span style="flex:1;color:var(--txt2)">Dama Corto</span>
+          <span style="color:var(--txt2);font-weight:600">$</span>
+          <div style="width:90px;background:var(--k5);border:1px solid var(--brd);border-radius:6px;padding:4px 8px;text-align:right;font-size:12px;color:var(--p1);font-weight:600">8.000</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px">
+          <span style="flex:1;color:var(--txt2)">Dama Largo</span>
+          <span style="color:var(--txt2);font-weight:600">$</span>
+          <div style="width:90px;background:var(--k5);border:1px solid var(--brd);border-radius:6px;padding:4px 8px;text-align:right;font-size:12px;color:var(--p1);font-weight:600">12.000</div>
+        </div>
+        <div style="margin-top:8px;background:linear-gradient(135deg,var(--p2),var(--k1));color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px"><i class="ti ti-device-floppy" style="font-size:13px"></i> Guardar precios</div>
+      </div>
+      <div class="tut-steps">
+        <div class="tut-step-item"><div class="tut-step-num">1</div><div class="tut-step-txt">Tocá la pestaña <strong>Precios</strong> (ícono de moneda 💰)</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">2</div><div class="tut-step-txt">Completá los precios de cada servicio según el largo del cabello</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">3</div><div class="tut-step-txt">Configurá el <strong>recargo por tarjeta</strong> arriba del todo (ej: 10%)</div></div>
+        <div class="tut-step-item"><div class="tut-step-num">4</div><div class="tut-step-txt">Tocá <strong>Guardar precios</strong> — se guardan en este dispositivo</div></div>
+      </div>
+      <div class="tut-tip"><i class="ti ti-bulb"></i> Los precios se guardan localmente. Si cambiás de dispositivo, volvé a cargarlos una vez.</div>
+    </div>
+
+    <!-- PASO 4: GUARDAR EN LA NUBE -->
+    <div class="tut-step" id="tut-4">
+      <div class="tut-visual">
+        <div class="tut-icon"><i class="ti ti-cloud"></i></div>
+        <div class="tut-visual-txt">
+          <h3>¿Cómo se guardan los datos?</h3>
+          <p>Todo se guarda automáticamente. No hace falta hacer nada extra.</p>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1rem">
+        <div style="background:var(--k5);border:1.5px solid var(--brd);border-radius:var(--rad);padding:.875rem;display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--p2),var(--k1));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-user-plus" style="color:#fff;font-size:18px"></i></div>
+          <div><div style="font-weight:600;font-size:13px;color:var(--p1)">Fichas y visitas</div><div style="font-size:12px;color:var(--txt2)">Se guardan en Google Sheets automáticamente ✅</div></div>
+        </div>
+        <div style="background:var(--k5);border:1.5px solid var(--brd);border-radius:var(--rad);padding:.875rem;display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--p2),var(--k1));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-coin" style="color:#fff;font-size:18px"></i></div>
+          <div><div style="font-weight:600;font-size:13px;color:var(--p1)">Precios y configuración</div><div style="font-size:12px;color:var(--txt2)">Se guardan en el navegador de cada dispositivo 📱</div></div>
+        </div>
+        <div style="background:var(--k5);border:1.5px solid var(--brd);border-radius:var(--rad);padding:.875rem;display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--p2),var(--k1));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-calendar" style="color:#fff;font-size:18px"></i></div>
+          <div><div style="font-weight:600;font-size:13px;color:var(--p1)">Turnos del calendario</div><div style="font-size:12px;color:var(--txt2)">Se guardan en el navegador de cada dispositivo 📱</div></div>
+        </div>
+      </div>
+      <div class="tut-tip"><i class="ti ti-bulb"></i> Para ver las fichas desde otro celular, simplemente abrí el mismo link. Los datos se sincronizan solos desde Google Sheets.</div>
+    </div>
+
+    <!-- NAV -->
+    <div class="tut-nav">
+      <button class="btn btn-sm" id="tutPrev" onclick="tutNav(-1)" style="visibility:hidden"><i class="ti ti-arrow-left"></i> Anterior</button>
+      <div class="tut-dots">
+        <div class="tut-dot on" onclick="goTutIdx(0)"></div>
+        <div class="tut-dot" onclick="goTutIdx(1)"></div>
+        <div class="tut-dot" onclick="goTutIdx(2)"></div>
+        <div class="tut-dot" onclick="goTutIdx(3)"></div>
+        <div class="tut-dot" onclick="goTutIdx(4)"></div>
+      </div>
+      <button class="btn btn-p btn-sm" id="tutNext" onclick="tutNav(1)">Siguiente <i class="ti ti-arrow-right"></i></button>
+    </div>
+  </div>
+</div>
 
 <div id="toast" class="toast"><i class="ti ti-circle-check"></i><span id="toastMsg"></span></div>
 </body>
