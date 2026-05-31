@@ -339,7 +339,7 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
   </div>
   <div class="act-row">
     <button class="btn btn-p" onclick="saveCliente()"><i class="ti ti-device-floppy"></i> Guardar ficha</button>
-    <button class="btn" onclick="clearNuevo()"><i class="ti ti-refresh"></i> Limpiar</button>
+    <button class="btn" onclick="if(confirm('¿Limpiar el formulario? Se perderán los datos no guardados.'))clearNuevo()"><i class="ti ti-refresh"></i> Limpiar</button>
   </div>
   <div id="msgNuevo"></div>
 </div>
@@ -504,7 +504,7 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
   </div>
   <div class="act-row">
     <button class="btn btn-p" onclick="saveServicio()"><i class="ti ti-plus"></i> Registrar visita</button>
-    <button class="btn" onclick="clearServicio()"><i class="ti ti-refresh"></i> Limpiar</button>
+    <button class="btn" onclick="if(confirm('¿Limpiar el formulario? Se perderán los datos no guardados.'))clearServicio()"><i class="ti ti-refresh"></i> Limpiar</button>
   </div>
   <div id="msgServ"></div>
 </div>
@@ -972,7 +972,8 @@ function saveEdicion(){
   setTimeout(()=>{document.getElementById('moEditar').classList.remove('open');renderList('')},1200);
 }
 function delCliente(id){
-  if(!confirm('¿Eliminar ficha y historial?\nNo se puede deshacer.'))return;
+  const c=C.find(x=>x.id===id);
+  if(!confirm('⚠️ ELIMINAR FICHA DE '+c.apellido.toUpperCase()+', '+c.nombre.toUpperCase()+'\n\nSe borrarán TODOS sus datos e historial de visitas.\nEsta acción NO se puede deshacer.\n\n¿Estás segura?'))return;
   C=C.filter(c=>c.id!==id);S=S.filter(s=>s.clienteId!==id);sv();
   document.getElementById('moFicha').classList.remove('open');renderList('');
 }
@@ -1335,7 +1336,7 @@ function quickDelTurno(id){
   const t=T.find(x=>x.id===id);
   if(!t)return;
   const cName=t.cliExt||getCliName(t.clienteId);
-  if(!confirm('¿Eliminar el turno de '+cName+' a las '+t.hora+'hs?'))return;
+  if(!confirm('⚠️ ELIMINAR turno de '+cName+' a las '+t.hora+'hs\n\n¿Estás segura?'))return;
   T=T.filter(x=>x.id!==id);
   svT();
   if(selDate)renderDayTurnos(selDate);
@@ -1347,7 +1348,7 @@ function delAllDay(){
   const[y,m,d]=selDate.split('-');
   const dayT=T.filter(t=>t.fecha===selDate);
   if(!dayT.length){alert('No hay turnos para borrar en este día.');return}
-  if(!confirm('¿Borrar los '+dayT.length+' turno(s) del '+d+'/'+m+'/'+y+'?\nEsta acción no se puede deshacer.'))return;
+  if(!confirm('⚠️ BORRAR '+dayT.length+' TURNO(S) DEL '+d+'/'+m+'/'+y+'\n\nEsta acción NO se puede deshacer.\n\n¿Estás segura?'))return;
   T=T.filter(t=>t.fecha!==selDate);
   svT();
   renderDayTurnos(selDate);
@@ -1400,6 +1401,17 @@ function showToast(msg){
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3000);
 }
+
+// Advertencia al cerrar si hay formulario activo
+window.addEventListener('beforeunload', function(e){
+  const hayFicha = document.getElementById('f-ap').value.trim() || document.getElementById('f-nom').value.trim();
+  const hayServicio = document.getElementById('s-cli').value;
+  const hayTurno = document.getElementById('turnoForm').style.display !== 'none' && document.getElementById('t-cli').value;
+  if(hayFicha || hayServicio || hayTurno){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
 
 initNum();loadPrecios();loadFromSheet();
 
@@ -1455,16 +1467,7 @@ document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && ['S','s'].includes(e.key)) { e.preventDefault(); return false; }
 });
 
-// 3. Detectar DevTools abierto y mostrar advertencia
-(function devToolsDetect() {
-  const threshold = 160;
-  setInterval(() => {
-    if (window.outerWidth - window.innerWidth > threshold ||
-        window.outerHeight - window.innerHeight > threshold) {
-      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;flex-direction:column;gap:16px;background:#FFF3FB"><div style="font-size:48px">🔒</div><div style="font-size:20px;font-weight:700;color:#6B1F6B">Acceso restringido</div><div style="font-size:14px;color:#7A3A7A">Por favor cerrá las herramientas de desarrollo.</div><button onclick="location.reload()" style="padding:10px 24px;background:linear-gradient(135deg,#8B2B8B,#E85DB0);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;margin-top:8px">Recargar página</button></div>';
-    }
-  }, 1000);
-})();
+// 3. Detección DevTools eliminada (falsos positivos en móvil)
 
 // 4. Prevenir selección de texto en zonas sensibles
 document.querySelectorAll('.card-title, .hdr, .tabs').forEach(el => {
