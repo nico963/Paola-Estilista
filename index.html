@@ -766,7 +766,7 @@ function clearServicio(){
     }
   });
   const today=new Date().toISOString().split('T')[0];
-  setDP('s-fecha-r','s-fecha-s',today);
+  document.getElementById('s-fecha-r').value=today;
   const cbT=document.getElementById('cb-tarjeta');
   if(cbT)cbT.checked=false;
   const extraEl=document.getElementById('tarjeta-extra');
@@ -831,7 +831,7 @@ function saveCliente(){
 function clearNuevo(){
   ['f-ap','f-nom','f-edad','f-tel','f-foto','f-obs'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-nivel').value='Nuevo';
-  setDP('f-cumple-r','f-cumple-s','');setDP('f-pv-r','f-pv-s','');
+  document.getElementById('f-cumple-r').value='';document.getElementById('f-pv-r').value='';
   document.getElementById('msgNuevo').textContent='';initNum();
 }
 
@@ -839,7 +839,7 @@ function loadCliSel(){
   const sel=document.getElementById('s-cli');
   sel.innerHTML='<option value="">— Seleccionar clienta —</option>'+[...C].sort((a,b)=>a.apellido.localeCompare(b.apellido)).map(c=>`<option value="${c.id}">${c.apellido}, ${c.nombre} (${c.nCliente})</option>`).join('');
   const today=new Date().toISOString().split('T')[0];
-  setDP('s-fecha-r','s-fecha-s',today);
+  document.getElementById('s-fecha-r').value=today;
   const cbT=document.getElementById('cb-tarjeta');
   if(cbT)cbT.checked=false;
   const extraEl=document.getElementById('tarjeta-extra');
@@ -951,8 +951,8 @@ function openEditar(id){
   document.getElementById('e-nom').value=c.nombre||'';
   document.getElementById('e-edad').value=c.edad||'';
   document.getElementById('e-tel').value=c.telefono||'';
-  setDP('e-cumple-r','e-cumple-s',c.cumple||'');
-  setDP('e-pv-r','e-pv-s',c.primeraVisita||'');
+  document.getElementById('e-cumple-r').value=c.cumple||'';
+  document.getElementById('e-pv-r').value=c.primeraVisita||'';
   document.getElementById('e-nivel').value=c.nivel||'Nuevo';
   document.getElementById('e-foto').value=c.fotoLink||'';
   document.getElementById('e-obs').value=c.obs||'';
@@ -1172,7 +1172,7 @@ function openTurnoForm(iso){
   document.getElementById('turnoFormTitle').textContent='Nuevo turno';
   document.getElementById('t-del-btn').style.display='none';
   clearTurnoForm();
-  if(selDate) setDP('t-fecha-r','t-fecha-s',selDate);
+  if(selDate){document.getElementById('t-fecha-r').value=selDate;filterHours();}
   document.getElementById('turnoForm').style.display='block';
   document.getElementById('turnoForm').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -1190,7 +1190,7 @@ function editTurno(id){
     document.getElementById('t-cli-ext-wrap').style.display='block';
     document.getElementById('t-cli-ext').value=t.cliExt;
   }
-  setDP('t-fecha-r','t-fecha-s',t.fecha||'');
+  document.getElementById('t-fecha-r').value=t.fecha||'';if(t.fecha)filterHours();
   // select hora radio
   document.querySelectorAll('[name="t-hora"]').forEach(r=>{r.checked=r.value===t.hora});
   document.getElementById('t-dur').value=t.duracion||'';
@@ -1274,7 +1274,7 @@ function clearTurnoForm(){
   document.getElementById('t-cli').value='';
   document.getElementById('t-cli-ext-wrap').style.display='none';
   document.getElementById('t-cli-ext').value='';
-  setDP('t-fecha-r','t-fecha-s','');
+  document.getElementById('t-fecha-r').value='';
   document.querySelectorAll('[name="t-hora"]').forEach(r=>r.checked=false);
   document.getElementById('t-dur').value='';
   document.getElementById('t-svc').value='';
