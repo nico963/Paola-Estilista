@@ -645,9 +645,19 @@ async function loadFromSheet() {
         id: String(r.id||''), clienteId: String(r.clienteid||''),
         fecha: r.fecha||'', servicios: (r.servicios||'').split(', ').filter(Boolean),
         detalles: (() => { try { return JSON.parse(r.detalles||'{}'); } catch(e) { return {}; } })(),
-        costo: parseFloat(r.total)||0, tarjeta: r.tarjeta==='Si', notas: r.notas||''
+        costo: parseFloat(r.total)||0, tarjeta: r.tarjeta==='Si'||r.tarjeta==='Sí', notas: r.notas||''
       })).filter(v => v.id && v.clienteId);
       if (visitas.length > 0) { S = visitas; localStorage.setItem('pelo_servicios', JSON.stringify(S)); }
+    }
+    if (data.turnos && data.turnos.length > 0) {
+      const turnos = data.turnos.map(r => ({
+        id: String(r.id||''), clienteId: String(r.clienteid||''),
+        cliExt: r.cliext||'', fecha: r.fecha||'',
+        hora: r.hora||'', duracion: r.duracion||'',
+        servicio: r.servicio||'', estado: r.estado||'conf',
+        notas: r.notas||''
+      })).filter(t => t.id && t.fecha);
+      if (turnos.length > 0) { T = turnos; localStorage.setItem('pelo_turnos', JSON.stringify(T)); }
     }
     renderList('');
   } catch(e) { console.warn('Usando localStorage:', e); renderList(''); }
@@ -1248,6 +1258,7 @@ function saveTurno(){
     T.push(entry);
   }
   svT();
+  syncToSheet('saveTurno', entry);
   setMsg(msg,'ok','✓ Turno guardado 💖');
   setTimeout(()=>{
     cancelTurnoForm();
@@ -1259,6 +1270,7 @@ function saveTurno(){
 function deleteTurno(){
   if(!editTurnoId)return;
   if(!confirm('¿Eliminar este turno?'))return;
+  syncToSheet('deleteTurno', {id: editTurnoId});
   T=T.filter(x=>x.id!==editTurnoId);
   svT();cancelTurnoForm();
   if(selDate)renderDayTurnos(selDate);
@@ -1337,6 +1349,7 @@ function quickDelTurno(id){
   if(!t)return;
   const cName=t.cliExt||getCliName(t.clienteId);
   if(!confirm('⚠️ ELIMINAR turno de '+cName+' a las '+t.hora+'hs\n\n¿Estás segura?'))return;
+  syncToSheet('deleteTurno', {id: id});
   T=T.filter(x=>x.id!==id);
   svT();
   if(selDate)renderDayTurnos(selDate);
