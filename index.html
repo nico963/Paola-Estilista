@@ -655,6 +655,19 @@ async function loadFromSheet() {
       })).filter(t => t.id && t.fecha);
       if (turnos.length > 0) { T = turnos; localStorage.setItem('pelo_turnos', JSON.stringify(T)); }
     }
+    if (data.precios && data.precios.length > 0) {
+      const bp={};
+      data.precios.forEach(r => {
+        if(r.clave === 'tarjeta_pct') {
+          localStorage.setItem('pelo_tarjeta_pct', String(r.valor));
+        } else {
+          bp[r.clave] = parseFloat(r.valor)||0;
+        }
+      });
+      if(Object.keys(bp).length > 0) {
+        localStorage.setItem('pelo_precios', JSON.stringify(bp));
+      }
+    }
     renderList('');
   } catch(e) { console.warn('Usando localStorage:', e); renderList(''); }
 }
@@ -795,9 +808,12 @@ function savePrecios(){
   const bp={};
   ALL_PRICE_KEYS.forEach(k=>{const el=document.getElementById('bp-'+k);if(el&&el.value)bp[k]=parseFloat(el.value)||0});
   localStorage.setItem('pelo_precios',JSON.stringify(bp));
-  // save tarjeta pct
   const tEl=document.getElementById('bp-tarjeta');
+  const tarjeta_pct=tEl?parseFloat(tEl.value||'0'):0;
   if(tEl) localStorage.setItem('pelo_tarjeta_pct',tEl.value||'0');
+  // Sincronizar con Sheets
+  syncToSheet('savePrecios', {precios: bp, tarjeta_pct: tarjeta_pct});
+  showToast('✓ Precios guardados 💖');
   setMsg(document.getElementById('msgPrecios'),'ok','✓ Precios guardados 💖');
 }
 
