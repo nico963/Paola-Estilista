@@ -671,12 +671,10 @@ async function loadFromSheet() {
       });
       if(Object.keys(bp).length > 0) {
         localStorage.setItem('pelo_precios', JSON.stringify(bp));
-        // Refrescar UI de Precios si el tab está activo (fix multiusuario)
-        if(document.getElementById('pnl-precios').classList.contains('on')) loadPrecios();
       }
     }
-    sheetsReady = true; // Sheets cargó OK
-    // Refrescar Precios y Calendario si están activos al volver de Sheets
+    sheetsReady = true; // Sheets cargó OK — a partir de acá T, C, S y precios están actualizados
+    // Si algún tab ya está abierto, refrescarlo con los datos reales
     if(document.getElementById('pnl-precios').classList.contains('on')) loadPrecios();
     if(document.getElementById('pnl-calendario').classList.contains('on')) { initCal(); loadTCliSel(); }
     renderList('');
@@ -716,9 +714,8 @@ function goTab(t,btn){
   if(t==='precios')loadPrecios();
   if(t==='calendario'){
     if(!sheetsReady){
-      // Sheets aún cargando: mostrar spinner y re-intentar cuando termine
-      document.getElementById('pnl-calendario').innerHTML += '';
-      loadFromSheet().then(()=>{ initCal(); loadTCliSel(); });
+      initCal(); loadTCliSel(); // render con localStorage mientras carga
+      loadFromSheet().then(()=>{ initCal(); loadTCliSel(); }); // re-render cuando llegue Sheets
     } else {
       initCal(); loadTCliSel();
     }
@@ -1434,7 +1431,7 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// Orden correcto: Sheets primero → después renderizar Precios con datos actualizados
+// Orden correcto: primero cargar Sheets, luego renderizar precios y calendario con datos reales
 initNum();loadFromSheet().then(()=>{ loadPrecios(); initCal(); loadTCliSel(); });
 
 // ===== TUTORIAL =====
