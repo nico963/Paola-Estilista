@@ -1435,7 +1435,7 @@ function showToast(msg){
 }
 
 // Orden correcto: Sheets primero → después renderizar Precios con datos actualizados
-initNum();loadFromSheet().then(()=>loadPrecios());
+initNum();loadFromSheet().then(()=>{ loadPrecios(); initCal(); loadTCliSel(); });
 
 // ===== TUTORIAL =====
 let tutIdx = 0;
