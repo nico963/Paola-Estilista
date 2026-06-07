@@ -670,8 +670,12 @@ async function loadFromSheet() {
       });
       if(Object.keys(bp).length > 0) {
         localStorage.setItem('pelo_precios', JSON.stringify(bp));
+        // Refrescar UI de Precios si el tab está activo (fix multiusuario)
+        if(document.getElementById('pnl-precios').classList.contains('on')) loadPrecios();
       }
     }
+    // Refrescar Calendario si está activo (fix multiusuario: turnos desde Sheets)
+    if(document.getElementById('pnl-calendario').classList.contains('on')) { initCal(); loadTCliSel(); }
     renderList('');
   } catch(e) { console.warn('Usando localStorage:', e); renderList(''); }
 }
@@ -1419,7 +1423,8 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-initNum();loadPrecios();loadFromSheet();
+// Orden correcto: Sheets primero → después renderizar Precios con datos actualizados
+initNum();loadFromSheet().then(()=>loadPrecios());
 
 // ===== TUTORIAL =====
 let tutIdx = 0;
