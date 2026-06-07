@@ -175,6 +175,20 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
 .xbtn:hover{background:rgba(255,255,255,.35)}
 @media(max-width:480px){.grid2{grid-template-columns:1fr}.svc-grid{grid-template-columns:1fr 1fr}.tab span{display:none}}
 
+
+/* ===== AUTOCOMPLETE CLIENTA ===== */
+.ac-wrap{position:relative}
+.ac-input{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:var(--rad);background:#fff;color:var(--txt);font-size:14px;font-family:'DM Sans',sans-serif;transition:border .2s}
+.ac-input:focus{outline:none;border-color:var(--k1)}
+.ac-input::placeholder{color:var(--txt3)}
+.ac-list{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--k1);border-top:none;border-radius:0 0 var(--rad) var(--rad);max-height:200px;overflow-y:auto;z-index:50;box-shadow:var(--sh-lg)}
+.ac-list.open{display:block}
+.ac-item{padding:9px 12px;font-size:13px;color:var(--txt);cursor:pointer;border-bottom:.5px solid var(--brd);display:flex;align-items:center;gap:8px;transition:background .15s}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover,.ac-item.focused{background:var(--k4)}
+.ac-item .ac-num{font-size:11px;color:var(--txt3);margin-left:auto;flex-shrink:0}
+.ac-empty{padding:10px 12px;font-size:13px;color:var(--txt3);font-style:italic}
+/* ================================ */
 /* ===== CALENDAR ===== */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
 .cal-nav h2{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--p1);text-transform:capitalize}
@@ -348,7 +362,13 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
   <div class="card">
     <div class="card-title"><i class="ti ti-sparkles"></i> Registrar visita</div>
     <!-- cliente + fecha -->
-    <div class="fg"><label>Clienta *</label><select id="s-cli"><option value="">— Seleccionar clienta —</option></select></div>
+    <div class="fg"><label>Clienta *</label>
+  <div class="ac-wrap" id="ac-s-wrap">
+    <input type="text" class="ac-input" id="ac-s-input" placeholder="Buscar por nombre o apellido..." autocomplete="off" oninput="acFilter('s')" onfocus="acOpen('s')" onblur="setTimeout(()=>acClose('s'),200)" />
+    <input type="hidden" id="s-cli" />
+    <div class="ac-list" id="ac-s-list"></div>
+  </div>
+</div>
     <div class="grid2" style="margin-bottom:1rem">
       <div class="fg"><label>Fecha *</label>
         <div class="dp-wrap"><input class="dp-show empty" id="s-fecha-s" placeholder="dd/mm/aaaa" readonly onclick="pickDate('s-fecha-r')" /><input type="date" id="s-fecha-r" class="dp-real" onchange="syncDP('s-fecha-r','s-fecha-s')" /></div>
@@ -550,7 +570,11 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
     <div class="turno-form">
       <div class="card-title" style="margin-bottom:.875rem"><i class="ti ti-calendar-plus"></i> <span id="turnoFormTitle">Nuevo turno</span></div>
       <div class="fg"><label>Clienta *</label>
-        <select id="t-cli"><option value="">— Seleccionar clienta —</option><option value="__ext__">✏️ Clienta externa (escribir nombre)</option></select>
+        <div class="ac-wrap" id="ac-t-wrap">
+    <input type="text" class="ac-input" id="ac-t-input" placeholder="Buscar por nombre o apellido..." autocomplete="off" oninput="acFilter('t')" onfocus="acOpen('t')" onblur="setTimeout(()=>acClose('t'),200)" />
+    <input type="hidden" id="t-cli" />
+    <div class="ac-list" id="ac-t-list"></div>
+  </div>
       </div>
       <div class="fg" id="t-cli-ext-wrap" style="display:none"><label>Nombre clienta externa</label><input type="text" id="t-cli-ext" placeholder="Nombre y apellido" /></div>
       <div class="fg"><label>Fecha *</label>
@@ -651,25 +675,9 @@ async function loadFromSheet() {
       if (visitas.length > 0) { S = visitas; localStorage.setItem('pelo_servicios', JSON.stringify(S)); }
     }
     if (data.turnos && data.turnos.length > 0) {
-      // Normaliza fecha a YYYY-MM-DD sin importar el formato que mande Sheets
-      function normFecha(v) {
-        if (!v) return '';
-        const s = String(v);
-        // Ya es ISO: 2025-06-01
-        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-        // Formato DD/MM/YYYY
-        const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-        if (dmy) return dmy[3]+'-'+dmy[2].padStart(2,'0')+'-'+dmy[1].padStart(2,'0');
-        // Objeto Date serializado por Apps Script (ej: "Sun Jun 01 2025 00:00:00 GMT-0300")
-        const d = new Date(s);
-        if (!isNaN(d.getTime())) {
-          return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-        }
-        return s;
-      }
       const turnos = data.turnos.map(r => ({
         id: String(r.id||''), clienteId: String(r.clienteid||''),
-        cliExt: r.cliext||'', fecha: normFecha(r.fecha),
+        cliExt: r.cliext||'', fecha: r.fecha||'',
         hora: r.hora||'', duracion: r.duracion||'',
         servicio: r.servicio||'', estado: r.estado||'conf',
         notas: r.notas||''
@@ -738,6 +746,55 @@ function goTab(t,btn){
   }
 }
 
+
+// ===== AUTOCOMPLETE CLIENTA =====
+function acRenderList(ns, q){
+  const list=document.getElementById('ac-'+ns+'-list');
+  const sorted=[...C].sort((a,b)=>a.apellido.localeCompare(b.apellido));
+  const fil=q.trim().length===0?sorted:sorted.filter(c=>{
+    const full=(c.apellido+' '+c.nombre+' '+c.nCliente).toLowerCase();
+    return q.toLowerCase().split(' ').every(w=>full.includes(w));
+  });
+  if(ns==='t'){
+    // opción clienta externa siempre al final
+    const extHtml=`<div class="ac-item" onmousedown="acSelectExt('t')"><span>✏️ Clienta externa (escribir nombre)</span></div>`;
+    list.innerHTML=(fil.length===0?'<div class="ac-empty">Sin resultados</div>':
+      fil.map(c=>`<div class="ac-item" onmousedown="acSelect('${ns}','${c.id}','${(c.apellido+', '+c.nombre).replace(/'/g,"\'")}')"><span>${c.apellido}, ${c.nombre}</span><span class="ac-num">${c.nCliente}</span></div>`).join(''))+extHtml;
+  } else {
+    list.innerHTML=fil.length===0?'<div class="ac-empty">Sin resultados</div>':
+      fil.map(c=>`<div class="ac-item" onmousedown="acSelect('${ns}','${c.id}','${(c.apellido+', '+c.nombre).replace(/'/g,"\'")}')"><span>${c.apellido}, ${c.nombre}</span><span class="ac-num">${c.nCliente}</span></div>`).join('');
+  }
+}
+function acFilter(ns){
+  const q=document.getElementById('ac-'+ns+'-input').value;
+  document.getElementById(ns+'-cli').value=''; // limpiar selección al escribir
+  acRenderList(ns,q);
+  document.getElementById('ac-'+ns+'-list').classList.add('open');
+}
+function acOpen(ns){
+  acRenderList(ns,document.getElementById('ac-'+ns+'-input').value);
+  document.getElementById('ac-'+ns+'-list').classList.add('open');
+}
+function acClose(ns){
+  document.getElementById('ac-'+ns+'-list').classList.remove('open');
+}
+function acSelect(ns,id,label){
+  document.getElementById(ns+'-cli').value=id;
+  document.getElementById('ac-'+ns+'-input').value=label;
+  document.getElementById('ac-'+ns+'-list').classList.remove('open');
+  // ocultar campo clienta externa si estaba visible
+  const extWrap=document.getElementById(ns+'-cli-ext-wrap');
+  if(extWrap) extWrap.style.display='none';
+}
+function acSelectExt(ns){
+  document.getElementById(ns+'-cli').value='__ext__';
+  document.getElementById('ac-'+ns+'-input').value='✏️ Clienta externa';
+  document.getElementById('ac-'+ns+'-list').classList.remove('open');
+  const extWrap=document.getElementById(ns+'-cli-ext-wrap');
+  if(extWrap) extWrap.style.display='block';
+}
+// ===== FIN AUTOCOMPLETE =====
+
 function initNum(){document.getElementById('f-num').value='CLI-'+(C.length+1).toString().padStart(4,'0')}
 
 // ---- SERVICE TOGGLE ----
@@ -802,6 +859,7 @@ function manualTotal(){const co=document.getElementById('s-costo');if(co.value)c
 
 function clearServicio(){
   document.getElementById('s-cli').value='';
+  document.getElementById('ac-s-input').value='';
   document.getElementById('s-foto').value='';
   document.getElementById('s-notas').value='';
   document.getElementById('totalAmt').textContent='$0';
@@ -890,8 +948,10 @@ function clearNuevo(){
 }
 
 function loadCliSel(){
-  const sel=document.getElementById('s-cli');
-  sel.innerHTML='<option value="">— Seleccionar clienta —</option>'+[...C].sort((a,b)=>a.apellido.localeCompare(b.apellido)).map(c=>`<option value="${c.id}">${c.apellido}, ${c.nombre} (${c.nCliente})</option>`).join('');
+  // Resetear autocomplete Servicio
+  document.getElementById('ac-s-input').value='';
+  document.getElementById('s-cli').value='';
+  acRenderList('s','');
   const today=new Date().toISOString().split('T')[0];
   setDP('s-fecha-r','s-fecha-s',today);
   const cbT=document.getElementById('cb-tarjeta');
@@ -1213,12 +1273,9 @@ function getCliName(id){
 }
 
 function loadTCliSel(){
-  const sel=document.getElementById('t-cli');
-  if(!sel)return;
-  const cur=sel.value;
-  sel.innerHTML='<option value="">— Seleccionar clienta —</option><option value="__ext__">✏️ Clienta externa</option>'+
-    [...C].sort((a,b)=>a.apellido.localeCompare(b.apellido)).map(c=>`<option value="${c.id}">${c.apellido}, ${c.nombre}</option>`).join('');
-  if(cur)sel.value=cur;
+  // Refrescar lista interna; no resetear el input si ya hay valor seleccionado
+  const cur=document.getElementById('t-cli').value;
+  if(!cur) acRenderList('t','');
 }
 
 function openTurnoForm(iso){
@@ -1239,6 +1296,10 @@ function editTurno(id){
   document.getElementById('t-del-btn').style.display='inline-flex';
   loadTCliSel();
   document.getElementById('t-cli').value=t.clienteId||'';
+  if(t.clienteId){
+    const _c=C.find(x=>x.id===t.clienteId);
+    if(_c) document.getElementById('ac-t-input').value=_c.apellido+', '+_c.nombre;
+  }
   if(t.cliExt){
     document.getElementById('t-cli').value='__ext__';
     document.getElementById('t-cli-ext-wrap').style.display='block';
@@ -1330,6 +1391,7 @@ function cancelTurnoForm(){
 
 function clearTurnoForm(){
   document.getElementById('t-cli').value='';
+  document.getElementById('ac-t-input').value='';
   document.getElementById('t-cli-ext-wrap').style.display='none';
   document.getElementById('t-cli-ext').value='';
   setDP('t-fecha-r','t-fecha-s','');
