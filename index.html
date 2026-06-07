@@ -675,9 +675,22 @@ async function loadFromSheet() {
       if (visitas.length > 0) { S = visitas; localStorage.setItem('pelo_servicios', JSON.stringify(S)); }
     }
     if (data.turnos && data.turnos.length > 0) {
+      // Normaliza fecha a YYYY-MM-DD sin importar el formato que mande Sheets
+      function normFecha(v) {
+        if (!v) return '';
+        const s = String(v);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+        const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+        if (dmy) return dmy[3]+'-'+dmy[2].padStart(2,'0')+'-'+dmy[1].padStart(2,'0');
+        const d = new Date(s);
+        if (!isNaN(d.getTime())) {
+          return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        }
+        return s;
+      }
       const turnos = data.turnos.map(r => ({
         id: String(r.id||''), clienteId: String(r.clienteid||''),
-        cliExt: r.cliext||'', fecha: r.fecha||'',
+        cliExt: r.cliext||'', fecha: normFecha(r.fecha),
         hora: r.hora||'', duracion: r.duracion||'',
         servicio: r.servicio||'', estado: r.estado||'conf',
         notas: r.notas||''
