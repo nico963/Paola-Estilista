@@ -614,6 +614,7 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
 
 <script>
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbz-preKuf6UcV17EDeMLRp1QgrnEdUKJoZLN_qwWTY7x5FHAgNk-d11zDZPgcF9lVnMQA/exec";
+let sheetsReady = false; // flag: Sheets terminó de cargar
 
 async function syncToSheet(action, data) {
   try {
@@ -674,10 +675,12 @@ async function loadFromSheet() {
         if(document.getElementById('pnl-precios').classList.contains('on')) loadPrecios();
       }
     }
-    // Refrescar Calendario si está activo (fix multiusuario: turnos desde Sheets)
+    sheetsReady = true; // Sheets cargó OK
+    // Refrescar Precios y Calendario si están activos al volver de Sheets
+    if(document.getElementById('pnl-precios').classList.contains('on')) loadPrecios();
     if(document.getElementById('pnl-calendario').classList.contains('on')) { initCal(); loadTCliSel(); }
     renderList('');
-  } catch(e) { console.warn('Usando localStorage:', e); renderList(''); }
+  } catch(e) { console.warn('Usando localStorage:', e); sheetsReady = true; renderList(''); }
 }
 
 let C=JSON.parse(localStorage.getItem('pelo_clientes')||'[]');
@@ -711,7 +714,15 @@ function goTab(t,btn){
   if(t==='agregar')loadCliSel();
   if(t==='nuevo')initNum();
   if(t==='precios')loadPrecios();
-  if(t==='calendario'){initCal();loadTCliSel();}
+  if(t==='calendario'){
+    if(!sheetsReady){
+      // Sheets aún cargando: mostrar spinner y re-intentar cuando termine
+      document.getElementById('pnl-calendario').innerHTML += '';
+      loadFromSheet().then(()=>{ initCal(); loadTCliSel(); });
+    } else {
+      initCal(); loadTCliSel();
+    }
+  }
 }
 
 function initNum(){document.getElementById('f-num').value='CLI-'+(C.length+1).toString().padStart(4,'0')}
