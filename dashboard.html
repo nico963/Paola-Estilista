@@ -321,58 +321,42 @@ body{font-family:'DM Sans',sans-serif;color:var(--txt);background:var(--k5);min-
   <!-- ══════════ RENTABILIDAD ══════════ -->
   <div class="pnl" id="pnl-rentabilidad">
 
-    <!-- Estado principal -->
-    <div id="rent-estado-box" class="rent-estado rent-mal">
-      <div>
-        <div class="rent-estado-lbl" id="rent-estado-lbl">Cargando...</div>
-        <div class="rent-estado-val" id="rent-estado-val">—</div>
-        <div class="rent-estado-sub" id="rent-estado-sub"></div>
-      </div>
-      <i class="ti ti-calculator rent-estado-ico" id="rent-estado-ico"></i>
-    </div>
-
-    <!-- Resumen ejecutivo -->
-    <div class="rent-resumen" id="rent-resumen"></div>
-
-    <!-- Grafico comparativo -->
+    <!-- Config gastos y empleada -->
     <div class="sec">
-      <div class="sec-title"><i class="ti ti-chart-bar"></i> Comparativa del mes</div>
-      <div class="legend" id="leg-rent"></div>
-      <div style="position:relative;height:220px"><canvas id="cRent" role="img" aria-label="Comparativa ingresos gastos empleada"></canvas></div>
+      <div class="sec-title"><i class="ti ti-settings"></i> Configuracion
+        <button class="save-btn" style="margin-left:auto;padding:5px 11px;font-size:11px" onclick="guardarConfig()"><i class="ti ti-device-floppy"></i> Guardar</button>
+        <span class="saved-msg" id="msg-config">✓ Guardado</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.75rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-size:13px;color:var(--txt2)">Gastos fijos mensuales</span>
+          <div style="display:flex;align-items:center;gap:5px">
+            <span style="font-size:13px;color:var(--txt2);font-weight:600">$</span>
+            <input type="number" id="cfg-gastos" min="0" placeholder="0"
+              style="width:130px;padding:7px 10px;border:1.5px solid var(--brd2);border-radius:var(--rad);font-size:15px;font-family:'Playfair Display',serif;font-weight:700;color:var(--p1);text-align:right;outline:none"
+              oninput="renderRentabilidad()" onfocus="this.style.borderColor='var(--k1)'" onblur="this.style.borderColor='var(--brd2)'" />
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-size:13px;color:var(--txt2)">Porcentaje empleada</span>
+          <div style="display:flex;align-items:center;gap:5px">
+            <input type="number" id="cfg-pct" min="0" max="100" placeholder="0"
+              style="width:70px;padding:7px 10px;border:1.5px solid var(--brd2);border-radius:var(--rad);font-size:15px;font-family:'Playfair Display',serif;font-weight:700;color:var(--p1);text-align:center;outline:none"
+              oninput="renderRentabilidad()" onfocus="this.style.borderColor='var(--k1)'" onblur="this.style.borderColor='var(--brd2)'" />
+            <span style="font-size:13px;color:var(--txt2);font-weight:600">%</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Periodos -->
-    <div class="sec">
-      <div class="sec-title"><i class="ti ti-calendar-stats"></i> Ganancias por periodo</div>
-      <div class="rent-resumen" id="rent-periodos" style="grid-template-columns:repeat(3,1fr)"></div>
-    </div>
+    <!-- HOY -->
+    <div id="card-hoy"></div>
 
-    <!-- Gastos fijos -->
-    <div class="sec">
-      <div class="sec-title"><i class="ti ti-building-store"></i> Gastos fijos mensuales
-        <button class="save-btn" style="margin-left:auto;padding:5px 11px;font-size:11px" onclick="guardarGastos()"><i class="ti ti-device-floppy"></i> Guardar</button>
-        <span class="saved-msg" id="msg-gastos">✓ Guardado</span>
-      </div>
-      <div id="gastos-lista"></div>
-      <button class="gasto-add" onclick="agregarGasto()"><i class="ti ti-plus"></i> Agregar gasto</button>
-      <div style="margin-top:.875rem;display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-top:1px solid var(--brd)">
-        <span style="font-size:13px;font-weight:600;color:var(--txt)">Total gastos fijos</span>
-        <span style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--p1)" id="total-gastos-lbl">$0</span>
-      </div>
-    </div>
+    <!-- SEMANA -->
+    <div id="card-semana"></div>
 
-    <!-- Porcentaje empleada -->
-    <div class="sec">
-      <div class="sec-title"><i class="ti ti-user-heart"></i> Porcentaje empleada
-        <button class="save-btn" style="margin-left:auto;padding:5px 11px;font-size:11px" onclick="guardarPct()"><i class="ti ti-device-floppy"></i> Guardar</button>
-        <span class="saved-msg" id="msg-pct">✓ Guardado</span>
-      </div>
-      <div class="pct-wrap">
-        <input type="number" class="pct-input" id="pct-empleada" min="0" max="100" value="30" oninput="renderRentabilidad()" />
-        <span style="font-size:14px;font-weight:600;color:var(--p2)">% de las ganancias</span>
-      </div>
-      <div class="pct-grid" id="pct-grid"></div>
-    </div>
+    <!-- MES -->
+    <div id="card-mes"></div>
 
   </div>
 
@@ -843,159 +827,97 @@ function renderGraficos(){
 
 
 // ═══════════ RENTABILIDAD ═══════════
-let gastos = JSON.parse(localStorage.getItem('rent_gastos') || '[{"nom":"Alquiler","val":0},{"nom":"Servicios","val":0},{"nom":"Insumos","val":0}]');
 
 function initRent(){
-  const pct = localStorage.getItem('rent_pct');
-  if(pct) document.getElementById('pct-empleada').value = pct;
-  renderGastosList();
+  const g = localStorage.getItem('rent_gastos_v2');
+  const p = localStorage.getItem('rent_pct_v2');
+  if(g) document.getElementById('cfg-gastos').value = g;
+  if(p) document.getElementById('cfg-pct').value = p;
 }
 
-function renderGastosList(){
-  const el = document.getElementById('gastos-lista');
-  el.innerHTML = gastos.map((g,i) => `
-    <div class="gasto-item">
-      <input class="gasto-nom" value="${g.nom}" placeholder="Nombre del gasto" oninput="gastos[${i}].nom=this.value" />
-      <input class="gasto-val" type="number" value="${g.val||''}" placeholder="$0" min="0"
-        oninput="gastos[${i}].val=parseFloat(this.value)||0; renderRentabilidad()" />
-      <button class="gasto-del" onclick="borrarGasto(${i})" title="Eliminar"><i class="ti ti-x"></i></button>
-    </div>`).join('');
-  renderRentabilidad();
-}
-
-function agregarGasto(){
-  gastos.push({nom:'Nuevo gasto',val:0});
-  renderGastosList();
-}
-
-function borrarGasto(i){
-  gastos.splice(i,1);
-  renderGastosList();
-}
-
-function guardarGastos(){
-  localStorage.setItem('rent_gastos', JSON.stringify(gastos));
-  const m = document.getElementById('msg-gastos');
+function guardarConfig(){
+  localStorage.setItem('rent_gastos_v2', document.getElementById('cfg-gastos').value||'0');
+  localStorage.setItem('rent_pct_v2', document.getElementById('cfg-pct').value||'0');
+  const m = document.getElementById('msg-config');
   m.style.display='inline'; setTimeout(()=>m.style.display='none', 2000);
 }
 
-function guardarPct(){
-  localStorage.setItem('rent_pct', document.getElementById('pct-empleada').value);
-  const m = document.getElementById('msg-pct');
-  m.style.display='inline'; setTimeout(()=>m.style.display='none', 2000);
+function cardHTML(titulo, icono, ing, gastosDia, empleada, neto){
+  const pos = neto > 0;
+  const eq  = neto === 0;
+  const bg  = pos ? 'background:linear-gradient(135deg,#1e8449,#27ae60)' : eq ? 'background:linear-gradient(135deg,#7d5a00,#e67e22)' : 'background:linear-gradient(135deg,#922b21,#c0392b)';
+  const ico = pos ? 'ti-trending-up' : eq ? 'ti-scale' : 'ti-trending-down';
+  const est = pos ? 'DIA POSITIVO' : eq ? 'PUNTO DE EQUILIBRIO' : 'DIA NEGATIVO';
+
+  return `<div class="sec" style="margin-bottom:.875rem">
+    <div class="sec-title"><i class="ti ${icono}"></i> ${titulo}</div>
+
+    <!-- resultado grande -->
+    <div style="${bg};border-radius:var(--radl);padding:1.25rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:10px;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.5px">${est}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:#fff;margin-top:4px;line-height:1">${fmtP(neto)}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:4px">ganancia de Paola</div>
+      </div>
+      <i class="ti ${ico}" style="font-size:44px;color:rgba(255,255,255,.25)"></i>
+    </div>
+
+    <!-- desglose -->
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.625rem 0;border-bottom:.5px solid var(--brd)">
+        <span style="font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:6px"><i class="ti ti-plus" style="font-size:13px;color:#27ae60"></i> Ingresos</span>
+        <span style="font-size:14px;font-weight:600;color:#1e8449">${fmtP(ing)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.625rem 0;border-bottom:.5px solid var(--brd)">
+        <span style="font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:6px"><i class="ti ti-minus" style="font-size:13px;color:#c0392b"></i> Gastos fijos</span>
+        <span style="font-size:14px;font-weight:600;color:#c0392b">− ${fmtP(gastosDia)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.625rem 0;border-bottom:.5px solid var(--brd)">
+        <span style="font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:6px"><i class="ti ti-minus" style="font-size:13px;color:#e67e22"></i> Empleada</span>
+        <span style="font-size:14px;font-weight:600;color:#e67e22">− ${fmtP(empleada)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 0">
+        <span style="font-size:14px;font-weight:600;color:var(--txt)">= Ganancia Paola</span>
+        <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:${pos?'#1e8449':eq?'#e67e22':'#c0392b'}">${fmtP(neto)}</span>
+      </div>
+    </div>
+  </div>`;
 }
 
 function renderRentabilidad(){
-  const mes = isoMes(mesOffset);
-  const mesPrev = isoMes(mesOffset-1);
-  const d = getMes(mesOffset);
-  const diasMes = new Date(d.getFullYear(), d.getMonth()+1, 0).getDate();
-  const diaAct = mesOffset===0 ? new Date().getDate() : diasMes;
+  const gastosMes = parseFloat(document.getElementById('cfg-gastos').value)||0;
+  const pct       = parseFloat(document.getElementById('cfg-pct').value)||0;
+  const mes       = isoMes(mesOffset);
+  const hoy_      = hoyISO();
 
-  // Ganancias
-  const vMes = S.filter(v=>v.fecha.startsWith(mes));
-  const vPrev = S.filter(v=>v.fecha.startsWith(mesPrev));
-  const ingMes = vMes.reduce((a,v)=>a+v.costo, 0);
-  const ingPrev = vPrev.reduce((a,v)=>a+v.costo, 0);
+  // Semana actual (lunes a hoy)
+  const ahora = new Date();
+  const lunes = new Date(ahora); lunes.setDate(ahora.getDate()-((ahora.getDay()+6)%7));
+  const lunesISO_ = lunes.getFullYear()+'-'+String(lunes.getMonth()+1).padStart(2,'0')+'-'+String(lunes.getDate()).padStart(2,'0');
 
-  // Semana actual (lun-hoy)
-  const hoy = new Date();
-  const lunes = new Date(hoy); lunes.setDate(hoy.getDate()-((hoy.getDay()+6)%7));
-  const lunesISO = lunes.getFullYear()+'-'+String(lunes.getMonth()+1).padStart(2,'0')+'-'+String(lunes.getDate()).padStart(2,'0');
-  const ingSem = S.filter(v=>v.fecha>=lunesISO && v.fecha<=hoyISO()).reduce((a,v)=>a+v.costo,0);
+  const ingHoy  = S.filter(v=>v.fecha===hoy_).reduce((a,v)=>a+v.costo,0);
+  const ingSem  = S.filter(v=>v.fecha>=lunesISO_&&v.fecha<=hoy_).reduce((a,v)=>a+v.costo,0);
+  const ingMes_ = S.filter(v=>v.fecha.startsWith(mes)).reduce((a,v)=>a+v.costo,0);
 
-  // Hoy
-  const ingHoy = S.filter(v=>v.fecha===hoyISO()).reduce((a,v)=>a+v.costo,0);
-  // Ayer
-  const ayer = new Date(hoy); ayer.setDate(ayer.getDate()-1);
-  const ayerISO = ayer.getFullYear()+'-'+String(ayer.getMonth()+1).padStart(2,'0')+'-'+String(ayer.getDate()).padStart(2,'0');
-  const ingAyer = S.filter(v=>v.fecha===ayerISO).reduce((a,v)=>a+v.costo,0);
-
-  // Gastos
-  const totalGastos = gastos.reduce((a,g)=>a+(parseFloat(g.val)||0), 0);
-  document.getElementById('total-gastos-lbl').textContent = fmtP(totalGastos);
+  // Gastos prorrateados
+  const gastosDia = Math.round(gastosMes/30);
+  const gastosSem = Math.round(gastosMes/4);
 
   // Empleada
-  const pct = parseFloat(document.getElementById('pct-empleada').value)||0;
-  const empleadaMes = Math.round(ingMes * pct / 100);
-  const empleadaSem = Math.round(ingSem * pct / 100);
-  const empleadaHoy = Math.round(ingHoy * pct / 100);
+  const empHoy = Math.round(ingHoy*pct/100);
+  const empSem = Math.round(ingSem*pct/100);
+  const empMes = Math.round(ingMes_*pct/100);
 
   // Neto
-  const neto = ingMes - totalGastos - empleadaMes;
-  const rentPct = ingMes > 0 ? Math.round(neto/ingMes*100) : 0;
+  const netoHoy = ingHoy - gastosDia - empHoy;
+  const netoSem = ingSem - gastosSem - empSem;
+  const netoMes = ingMes_ - gastosMes - empMes;
 
-  // Estado
-  const estadoBox = document.getElementById('rent-estado-box');
-  const estadoLbl = document.getElementById('rent-estado-lbl');
-  const estadoVal = document.getElementById('rent-estado-val');
-  const estadoSub = document.getElementById('rent-estado-sub');
-  const estadoIco = document.getElementById('rent-estado-ico');
-  estadoBox.className = 'rent-estado';
-  if(ingMes === 0 && totalGastos === 0){ estadoBox.classList.add('rent-eq'); estadoLbl.textContent='Sin datos aun'; estadoVal.textContent='—'; estadoSub.textContent='Carga tus gastos para ver el analisis'; estadoIco.className='ti ti-calculator rent-estado-ico'; }
-  else if(neto > 0){ estadoBox.classList.add('rent-ok'); estadoLbl.textContent='Resultado: POSITIVO'; estadoVal.textContent='Superaste los gastos'; estadoSub.textContent='Rentabilidad neta: '+rentPct+'% sobre ingresos'; estadoIco.className='ti ti-trending-up rent-estado-ico'; }
-  else if(neto === 0){ estadoBox.classList.add('rent-eq'); estadoLbl.textContent='Resultado: PUNTO DE EQUILIBRIO'; estadoVal.textContent='Cubrís exactamente los gastos'; estadoSub.textContent='Sin margen de ganancia este mes'; estadoIco.className='ti ti-scale rent-estado-ico'; }
-  else { estadoBox.classList.add('rent-mal'); estadoLbl.textContent='Resultado: DEFICIT'; estadoVal.textContent=fmtP(Math.abs(neto))+' por debajo'; estadoSub.textContent='Los gastos superan los ingresos este mes'; estadoIco.className='ti ti-trending-down rent-estado-ico'; }
-
-  // Resumen ejecutivo
-  document.getElementById('rent-resumen').innerHTML=`
-    <div class="rent-kpi"><div class="rent-kpi-lbl">Ingresos mes</div><div class="rent-kpi-val" style="color:var(--p1)">${fmtP(ingMes)}</div><div class="rent-kpi-sub ${delta(ingMes,ingPrev).cls}">${delta(ingMes,ingPrev).txt}</div></div>
-    <div class="rent-kpi"><div class="rent-kpi-lbl">Gastos fijos</div><div class="rent-kpi-val" style="color:#c0392b">${fmtP(totalGastos)}</div><div class="rent-kpi-sub neu">${ingMes>0?Math.round(totalGastos/ingMes*100):0}% de ingresos</div></div>
-    <div class="rent-kpi"><div class="rent-kpi-lbl">Empleada (${pct}%)</div><div class="rent-kpi-val" style="color:#e67e22">${fmtP(empleadaMes)}</div><div class="rent-kpi-sub neu">del total del mes</div></div>
-    <div class="rent-kpi"><div class="rent-kpi-lbl">Ganancia neta</div><div class="rent-kpi-val ${neto>=0?'':'dn'}" style="${neto>=0?'color:#1e8449':'color:#c0392b'}">${fmtP(neto)}</div><div class="rent-kpi-sub ${rentPct>=0?'up':'dn'}">${rentPct}% rentabilidad</div></div>`;
-
-  // Periodos (hoy / semana / mes)
-  const pAyer = ingAyer > 0 ? Math.round((ingHoy-ingAyer)/ingAyer*100) : null;
-  document.getElementById('rent-periodos').innerHTML=`
-    <div class="rent-kpi" style="text-align:center">
-      <div class="rent-kpi-lbl">Hoy</div>
-      <div class="rent-kpi-val" style="font-size:17px">${fmtP(ingHoy)}</div>
-      <div class="rent-kpi-sub neu">Empleada: ${fmtP(empleadaHoy)}</div>
-      ${pAyer!==null?`<div class="rent-kpi-sub ${pAyer>=0?'up':'dn'}">${pAyer>=0?'↑':'↓'}${Math.abs(pAyer)}% vs ayer</div>`:''}
-    </div>
-    <div class="rent-kpi" style="text-align:center">
-      <div class="rent-kpi-lbl">Esta semana</div>
-      <div class="rent-kpi-val" style="font-size:17px">${fmtP(ingSem)}</div>
-      <div class="rent-kpi-sub neu">Empleada: ${fmtP(empleadaSem)}</div>
-    </div>
-    <div class="rent-kpi" style="text-align:center">
-      <div class="rent-kpi-lbl">Este mes</div>
-      <div class="rent-kpi-val" style="font-size:17px">${fmtP(ingMes)}</div>
-      <div class="rent-kpi-sub neu">Empleada: ${fmtP(empleadaMes)}</div>
-    </div>`;
-
-  // Porcentaje empleada grid
-  document.getElementById('pct-grid').innerHTML=`
-    <div class="pct-kpi"><div class="pct-kpi-lbl">Hoy</div><div class="pct-kpi-val">${fmtP(empleadaHoy)}</div></div>
-    <div class="pct-kpi"><div class="pct-kpi-lbl">Semana</div><div class="pct-kpi-val">${fmtP(empleadaSem)}</div></div>
-    <div class="pct-kpi"><div class="pct-kpi-lbl">Mes</div><div class="pct-kpi-val">${fmtP(empleadaMes)}</div></div>`;
-
-  // Grafico
-  renderGraficoRent(ingMes, totalGastos, empleadaMes);
+  document.getElementById('card-hoy').innerHTML    = cardHTML('Hoy',      'ti-sun',          ingHoy,  gastosDia, empHoy, netoHoy);
+  document.getElementById('card-semana').innerHTML = cardHTML('Esta semana','ti-calendar-week', ingSem,  gastosSem, empSem, netoSem);
+  document.getElementById('card-mes').innerHTML    = cardHTML('Este mes',  'ti-calendar-month',ingMes_, gastosMes, empMes, netoMes);
 }
 
-let chRent = null;
-function renderGraficoRent(ing, gastos_, emp){
-  document.getElementById('leg-rent').innerHTML=`
-    <span style="display:flex;align-items:center;gap:4px"><span class="leg-sq" style="background:#6B1F6B"></span>Ingresos</span>
-    <span style="display:flex;align-items:center;gap:4px"><span class="leg-sq" style="background:#e74c3c"></span>Gastos fijos</span>
-    <span style="display:flex;align-items:center;gap:4px"><span class="leg-sq" style="background:#e67e22"></span>Empleada</span>
-    <span style="display:flex;align-items:center;gap:4px"><span class="leg-sq" style="background:#27ae60"></span>Neto</span>`;
-  if(chRent){chRent.destroy();chRent=null;}
-  const neto = Math.max(0, ing - gastos_ - emp);
-  chRent = new Chart(document.getElementById('cRent'),{
-    type:'bar',
-    data:{
-      labels:['Ingresos','Gastos fijos','Empleada','Neto'],
-      datasets:[{
-        data:[ing, gastos_, emp, neto],
-        backgroundColor:['#8B2B8B','#e74c3c','#e67e22','#27ae60'],
-        borderRadius:5
-      }]
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmtP(ctx.raw)}}},scales:{y:{ticks:{callback:v=>fmtP(v),font:{size:10}},grid:{color:'rgba(0,0,0,.04)'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
-  });
-}
 // ═══════════ FIN RENTABILIDAD ═══════════
 
 cargar();
