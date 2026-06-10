@@ -253,6 +253,9 @@ input[readonly]{background:var(--k4);color:var(--txt2)}
 .toast i{font-size:18px}
 
 /* ===== HELP BUTTON & TUTORIAL ===== */
+.dash-fab{position:fixed;bottom:9.5rem;right:1rem;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6B1F6B,#B03DAF);border:none;cursor:pointer;box-shadow:0 4px 16px rgba(176,61,175,.35);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform .2s;text-decoration:none}
+.dash-fab:hover{transform:scale(1.1)}
+.dash-fab i{font-size:22px;color:#fff}
 .help-fab{position:fixed;bottom:5.5rem;right:1rem;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--p2),var(--k1));border:none;cursor:pointer;box-shadow:0 4px 16px rgba(176,61,175,.35);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform .2s}
 .help-fab:hover{transform:scale(1.1)}
 .help-fab i{font-size:22px;color:#fff}
@@ -675,22 +678,9 @@ async function loadFromSheet() {
       if (visitas.length > 0) { S = visitas; localStorage.setItem('pelo_servicios', JSON.stringify(S)); }
     }
     if (data.turnos && data.turnos.length > 0) {
-      // Normaliza fecha a YYYY-MM-DD sin importar el formato que mande Sheets
-      function normFecha(v) {
-        if (!v) return '';
-        const s = String(v);
-        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-        const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-        if (dmy) return dmy[3]+'-'+dmy[2].padStart(2,'0')+'-'+dmy[1].padStart(2,'0');
-        const d = new Date(s);
-        if (!isNaN(d.getTime())) {
-          return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-        }
-        return s;
-      }
       const turnos = data.turnos.map(r => ({
         id: String(r.id||''), clienteId: String(r.clienteid||''),
-        cliExt: r.cliext||'', fecha: normFecha(r.fecha),
+        cliExt: r.cliext||'', fecha: r.fecha||'',
         hora: r.hora||'', duracion: r.duracion||'',
         servicio: r.servicio||'', estado: r.estado||'conf',
         notas: r.notas||''
@@ -1588,6 +1578,11 @@ document.querySelectorAll('.card-title, .hdr, .tabs').forEach(el => {
 
 </script>
 
+
+<!-- DASHBOARD FAB BUTTON -->
+<a href="dashboard.html" class="dash-fab" title="Ver Dashboard">
+  <i class="ti ti-layout-dashboard"></i>
+</a>
 
 <!-- HELP FAB BUTTON -->
 <button class="help-fab" onclick="openTutorial()" title="¿Cómo usar el sistema?">
