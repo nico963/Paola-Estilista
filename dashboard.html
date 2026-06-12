@@ -328,22 +328,32 @@ body{font-family:'DM Sans',sans-serif;color:var(--txt);background:var(--k5);min-
         <span class="saved-msg" id="msg-config">✓ Guardado</span>
       </div>
       <div style="display:flex;flex-direction:column;gap:.75rem">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-          <span style="font-size:13px;color:var(--txt2)">Gastos fijos mensuales</span>
-          <div style="display:flex;align-items:center;gap:5px">
-            <span style="font-size:13px;color:var(--txt2);font-weight:600">$</span>
-            <input type="number" id="cfg-gastos" min="0" placeholder="0"
-              style="width:130px;padding:7px 10px;border:1.5px solid var(--brd2);border-radius:var(--rad);font-size:15px;font-family:'Playfair Display',serif;font-weight:700;color:var(--p1);text-align:right;outline:none"
-              oninput="renderRentabilidad()" onfocus="this.style.borderColor='var(--k1)'" onblur="this.style.borderColor='var(--brd2)'" />
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <span style="font-size:13px;color:var(--txt2)">Gastos fijos diarios</span>
+            <div style="display:flex;align-items:center;gap:5px">
+              <span style="font-size:13px;color:var(--txt2);font-weight:600">$</span>
+              <input type="number" id="cfg-gastos" min="0" placeholder="0"
+                style="width:130px;padding:7px 10px;border:1.5px solid var(--brd2);border-radius:var(--rad);font-size:15px;font-family:'Playfair Display',serif;font-weight:700;color:var(--p1);text-align:right;outline:none"
+                oninput="renderRentabilidad()" onfocus="this.style.borderColor='var(--k1)'" onblur="this.style.borderColor='var(--brd2)'" />
+            </div>
+          </div>
+          <div style="text-align:right;margin-top:4px">
+            <span style="font-size:11px;color:var(--txt3)" id="cfg-gastos-mes">= $0 al mes (20 dias)</span>
           </div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-          <span style="font-size:13px;color:var(--txt2)">Porcentaje empleada</span>
-          <div style="display:flex;align-items:center;gap:5px">
-            <input type="number" id="cfg-pct" min="0" max="100" placeholder="0"
-              style="width:70px;padding:7px 10px;border:1.5px solid var(--brd2);border-radius:var(--rad);font-size:15px;font-family:'Playfair Display',serif;font-weight:700;color:var(--p1);text-align:center;outline:none"
-              oninput="renderRentabilidad()" onfocus="this.style.borderColor='var(--k1)'" onblur="this.style.borderColor='var(--brd2)'" />
-            <span style="font-size:13px;color:var(--txt2);font-weight:600">%</span>
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <span style="font-size:13px;color:var(--txt2)">Porcentaje empleada</span>
+            <div style="display:flex;align-items:center;gap:5px">
+              <input type="number" id="cfg-pct" min="0" max="100" placeholder="0"
+                style="width:70px;padding:7px 10px;border:1.5px solid var(--brd2);border-radius:var(--rad);font-size:15px;font-family:'Playfair Display',serif;font-weight:700;color:var(--p1);text-align:center;outline:none"
+                oninput="renderRentabilidad()" onfocus="this.style.borderColor='var(--k1)'" onblur="this.style.borderColor='var(--brd2)'" />
+              <span style="font-size:13px;color:var(--txt2);font-weight:600">%</span>
+            </div>
+          </div>
+          <div style="text-align:right;margin-top:4px">
+            <span style="font-size:11px;color:var(--txt3)" id="cfg-pct-hoy">= $0 sobre lo de hoy</span>
           </div>
         </div>
       </div>
@@ -885,8 +895,9 @@ function cardHTML(titulo, icono, ing, gastosDia, empleada, neto){
 }
 
 function renderRentabilidad(){
-  const gastosMes = parseFloat(document.getElementById('cfg-gastos').value)||0;
+  const gastosDiaInput = parseFloat(document.getElementById('cfg-gastos').value)||0;
   const pct       = parseFloat(document.getElementById('cfg-pct').value)||0;
+  const gastosMes = gastosDiaInput*20;
   const mes       = isoMes(mesOffset);
   const hoy_      = hoyISO();
 
@@ -899,9 +910,9 @@ function renderRentabilidad(){
   const ingSem  = S.filter(v=>v.fecha>=lunesISO_&&v.fecha<=hoy_).reduce((a,v)=>a+v.costo,0);
   const ingMes_ = S.filter(v=>v.fecha.startsWith(mes)).reduce((a,v)=>a+v.costo,0);
 
-  // Gastos prorrateados
-  const gastosDia = Math.round(gastosMes/30);
-  const gastosSem = Math.round(gastosMes/4);
+  // Gastos: diario directo, semana = 5 dias laborales, mes = 20 dias
+  const gastosDia = gastosDiaInput;
+  const gastosSem = gastosDiaInput*5;
 
   // Empleada
   const empHoy = Math.round(ingHoy*pct/100);
@@ -916,6 +927,10 @@ function renderRentabilidad(){
   document.getElementById('card-hoy').innerHTML    = cardHTML('Hoy',      'ti-sun',          ingHoy,  gastosDia, empHoy, netoHoy);
   document.getElementById('card-semana').innerHTML = cardHTML('Esta semana','ti-calendar-week', ingSem,  gastosSem, empSem, netoSem);
   document.getElementById('card-mes').innerHTML    = cardHTML('Este mes',  'ti-calendar-month',ingMes_, gastosMes, empMes, netoMes);
+
+  // Textos de ayuda en la config
+  document.getElementById('cfg-gastos-mes').textContent = '= '+fmtP(gastosMes)+' al mes (20 dias)';
+  document.getElementById('cfg-pct-hoy').textContent = '= '+fmtP(empHoy)+' sobre lo de hoy ('+fmtP(ingHoy)+')';
 }
 
 // ═══════════ FIN RENTABILIDAD ═══════════
