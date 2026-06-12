@@ -897,9 +897,9 @@ function cardHTML(titulo, icono, ing, gastosDia, empleada, neto){
 function renderRentabilidad(){
   const gastosDiaInput = parseFloat(document.getElementById('cfg-gastos').value)||0;
   const pct       = parseFloat(document.getElementById('cfg-pct').value)||0;
-  const gastosMes = gastosDiaInput*20;
   const mes       = isoMes(mesOffset);
   const hoy_      = hoyISO();
+  const d_        = getMes(mesOffset);
 
   // Semana actual (lunes a hoy)
   const ahora = new Date();
@@ -910,9 +910,15 @@ function renderRentabilidad(){
   const ingSem  = S.filter(v=>v.fecha>=lunesISO_&&v.fecha<=hoy_).reduce((a,v)=>a+v.costo,0);
   const ingMes_ = S.filter(v=>v.fecha.startsWith(mes)).reduce((a,v)=>a+v.costo,0);
 
-  // Gastos: diario directo, semana = 5 dias laborales, mes = 20 dias
+  // Dias transcurridos: semana = lunes a hoy inclusive (max 7) | mes = dia actual del mes (o total si es mes pasado)
+  const diasSemTranscurridos = Math.min(7, Math.floor((new Date(hoy_)-new Date(lunesISO_))/(1000*60*60*24))+1);
+  const diasMesTotal = new Date(d_.getFullYear(), d_.getMonth()+1, 0).getDate();
+  const diasMesTranscurridos = mesOffset===0 ? new Date().getDate() : diasMesTotal;
+
+  // Gastos: diario directo, semana y mes segun dias transcurridos reales
   const gastosDia = gastosDiaInput;
-  const gastosSem = gastosDiaInput*5;
+  const gastosSem = gastosDiaInput*diasSemTranscurridos;
+  const gastosMes = gastosDiaInput*diasMesTranscurridos;
 
   // Empleada
   const empHoy = Math.round(ingHoy*pct/100);
@@ -929,7 +935,7 @@ function renderRentabilidad(){
   document.getElementById('card-mes').innerHTML    = cardHTML('Este mes',  'ti-calendar-month',ingMes_, gastosMes, empMes, netoMes);
 
   // Textos de ayuda en la config
-  document.getElementById('cfg-gastos-mes').textContent = '= '+fmtP(gastosMes)+' al mes (20 dias)';
+  document.getElementById('cfg-gastos-mes').textContent = '= '+fmtP(gastosDiaInput*20)+' al mes (20 dias)';
   document.getElementById('cfg-pct-hoy').textContent = '= '+fmtP(empHoy)+' sobre lo de hoy ('+fmtP(ingHoy)+')';
 }
 
