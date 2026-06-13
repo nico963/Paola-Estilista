@@ -852,7 +852,7 @@ function guardarConfig(){
   m.style.display='inline'; setTimeout(()=>m.style.display='none', 2000);
 }
 
-function cardHTML(titulo, icono, ing, gastosDia, empleada, neto){
+function cardHTML(titulo, icono, ing, gastosDia, empleada, neto, diasTxt){
   const pos = neto > 0;
   const eq  = neto === 0;
   const bg  = pos ? 'background:linear-gradient(135deg,#1e8449,#27ae60)' : eq ? 'background:linear-gradient(135deg,#7d5a00,#e67e22)' : 'background:linear-gradient(135deg,#922b21,#c0392b)';
@@ -879,7 +879,7 @@ function cardHTML(titulo, icono, ing, gastosDia, empleada, neto){
         <span style="font-size:14px;font-weight:600;color:#1e8449">${fmtP(ing)}</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:.625rem 0;border-bottom:.5px solid var(--brd)">
-        <span style="font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:6px"><i class="ti ti-minus" style="font-size:13px;color:#c0392b"></i> Gastos fijos</span>
+        <span style="font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:6px"><i class="ti ti-minus" style="font-size:13px;color:#c0392b"></i> Gastos fijos${diasTxt?` <span style="color:var(--txt3);font-size:11px">(${diasTxt})</span>`:''}</span>
         <span style="font-size:14px;font-weight:600;color:#c0392b">− ${fmtP(gastosDia)}</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:.625rem 0;border-bottom:.5px solid var(--brd)">
@@ -930,9 +930,9 @@ function renderRentabilidad(){
   const netoSem = ingSem - gastosSem - empSem;
   const netoMes = ingMes_ - gastosMes - empMes;
 
-  document.getElementById('card-hoy').innerHTML    = cardHTML('Hoy',      'ti-sun',          ingHoy,  gastosDia, empHoy, netoHoy);
-  document.getElementById('card-semana').innerHTML = cardHTML('Esta semana','ti-calendar-week', ingSem,  gastosSem, empSem, netoSem);
-  document.getElementById('card-mes').innerHTML    = cardHTML('Este mes',  'ti-calendar-month',ingMes_, gastosMes, empMes, netoMes);
+  document.getElementById('card-hoy').innerHTML    = cardHTML('Hoy',      'ti-sun',          ingHoy,  gastosDia, empHoy, netoHoy, null);
+  document.getElementById('card-semana').innerHTML = cardHTML('Esta semana','ti-calendar-week', ingSem,  gastosSem, empSem, netoSem, diasSemTranscurridos+' dia'+(diasSemTranscurridos!==1?'s':''));
+  document.getElementById('card-mes').innerHTML    = cardHTML('Este mes',  'ti-calendar-month',ingMes_, gastosMes, empMes, netoMes, diasMesTranscurridos+' dia'+(diasMesTranscurridos!==1?'s':''));
 
   // Textos de ayuda en la config
   document.getElementById('cfg-gastos-mes').textContent = '= '+fmtP(gastosDiaInput*20)+' al mes (20 dias)';
